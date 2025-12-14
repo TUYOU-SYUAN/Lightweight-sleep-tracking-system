@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?∠?餈質馱 - 甇瑕蝝??/title>
+    <title>睡眠追蹤 - 歷史</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
         .filters-section {
@@ -51,35 +51,6 @@
 
         .filter-btn:hover {
             background: #764ba2;
-        }
-
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .history-table thead {
-            background: #667eea;
-            color: white;
-        }
-
-        .history-table th {
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .history-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .history-table tbody tr:hover {
-            background: #f9f9f9;
         }
 
         .empty-state {
@@ -151,18 +122,19 @@
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
         }
 
+        .info-banner {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            color: #1565c0;
+            font-size: 0.9rem;
+        }
+
         @media (max-width: 640px) {
             .filter-group {
                 grid-template-columns: 1fr;
-            }
-
-            .history-table {
-                font-size: 0.9rem;
-            }
-
-            .history-table th,
-            .history-table td {
-                padding: 0.75rem 0.5rem;
             }
         }
     </style>
@@ -171,73 +143,78 @@
     <main class="container">
         <header class="app-header">
             <div class="nav-container">
-                <button class="menu-toggle" id="menuToggle" aria-label="???銵?>??/button>
-                <h1>? ?∠?餈質馱蝟餌絞</h1>
+                <button class="menu-toggle" id="menuToggle" aria-label="切換功能表">☰</button>
+                <h1>💤 睡眠追蹤系統</h1>
                 <nav class="nav-menu" id="navMenu">
-                    <a href="../index.html" class="nav-link">?? 擐?</a>
-                    <a href="monitoring.html" class="nav-link">智能監控</a>
-                    <a href="history.html" class="nav-link active">歷史</a>
-                    <a href="settings.html" class="nav-link">?? 閮剖?</a>
+                    <a href="../index.html" class="nav-link">🏠 首頁</a>
+                    <a href="monitoring.html" class="nav-link">👁️ 智能監控</a>
+                    <a href="history.html" class="nav-link active">📋 歷史</a>
+                    <a href="settings.html" class="nav-link">⚙️ 設定</a>
                 </nav>
             </div>
-            <p class="subtitle">?∠?餈質馱甇瑕閮?</p>
+            <p class="subtitle">過去7天的睡眠紀錄</p>
         </header>
 
         <div class="content">
-            <!-- 蝭拚? -->
+            <!-- 提示信息 -->
+            <div class="info-banner">
+                <strong>📌 提示：</strong>系統只保留過去7天的歷史記錄，超過7天的資料會自動刪除。
+            </div>
+
+            <!-- 篩選區 -->
             <div class="filters-section">
-                <h3>?? 蝭拚</h3>
+                <h3>🔍 篩選</h3>
                 <div class="filter-group">
                     <div>
-                        <label for="startDate">???交?</label>
+                        <label for="startDate">開始日期</label>
                         <input type="date" id="startDate">
                     </div>
                     <div>
-                        <label for="endDate">蝯??交?</label>
+                        <label for="endDate">結束日期</label>
                         <input type="date" id="endDate">
                     </div>
-                    <button class="filter-btn" onclick="applyFilters()">憟</button>
+                    <button class="filter-btn" onclick="applyFilters()">篩選</button>
                 </div>
             </div>
 
-            <!-- 甇瑕皜 -->
+            <!-- 歷史列表 -->
             <div id="historyContainer" class="history-list">
                 <div class="empty-state">
-                    <p>? 撠甇瑕蝝??/p>
+                    <p>暫無歷史紀錄</p>
                 </div>
             </div>
 
-            <!-- ?臬? -->
+            <!-- 匯出區 -->
             <div class="export-section">
                 <button class="export-btn" onclick="exportAsCSV()">
-                    ?? ?臬??CSV
+                    📥 匯出為CSV
                 </button>
                 <button class="export-btn" onclick="exportAsJSON()" style="margin-left: 0.5rem;">
-                    ? ?臬??JSON
+                    📥 匯出為JSON
                 </button>
             </div>
         </div>
 
         <footer class="app-footer">
-            <p>頛??∠?餈質馱蝟餌絞 v1.0 | 甇瑕蝝??/p>
+            <p>輕量睡眠追蹤系統 v1.0 | 歷史紀錄</p>
         </footer>
     </main>
 
     <script>
-        // ??撠?
+        // 手機導航功能
         document.getElementById('menuToggle').addEventListener('click', function() {
             const navMenu = document.getElementById('navMenu');
             navMenu.classList.toggle('active');
         });
 
-        // 暺?撠???????
+        // 點擊導航項目時關閉菜單
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function() {
                 document.getElementById('navMenu').classList.remove('active');
             });
         });
 
-        // 暺???嗡??唳???
+        // 點擊頁面其他地方關閉菜單
         document.addEventListener('click', function(e) {
             const navMenu = document.getElementById('navMenu');
             const menuToggle = document.getElementById('menuToggle');
@@ -245,38 +222,50 @@
                 navMenu.classList.remove('active');
             }
         });
-    </script>
 
-        // 閮剔蔭?交?蝭??身??
+        // ============ 歷史記錄管理 ============
+
+        const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+        // 清理超過7天的記錄
+        function cleanupOldRecords() {
+            try {
+                const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+                const now = Date.now();
+                
+                const filtered = trackingSamples.filter(sample => {
+                    const sampleTime = new Date(sample.createdAt).getTime();
+                    return (now - sampleTime) < SEVEN_DAYS_MS;
+                });
+
+                if (filtered.length !== trackingSamples.length) {
+                    localStorage.setItem('trackingSamples', JSON.stringify(filtered));
+                    console.log(`已清理 ${trackingSamples.length - filtered.length} 條超過7天的記錄`);
+                }
+            } catch (e) {
+                console.error('清理舊記錄錯誤:', e);
+            }
+        }
+
+        // 初始化日期範圍
         function initializeDateRange() {
             const endDate = new Date();
-            const startDate = new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
             
             document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
             document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
         }
 
-        // ?澆????
-        function formatDate(date) {
-            const d = new Date(date);
-            return d.toLocaleDateString('zh-TW', { 
-                year: 'numeric', 
-                month: '2-digit', 
-                day: '2-digit',
-                weekday: 'short'
-            });
-        }
-
-        // 閮??∠??
+        // 計算睡眠時長
         function calculateSleepDuration(samples) {
-            if (samples.length < 2) return '-- 撠?';
+            if (samples.length < 2) return '-- 小時';
             const start = new Date(samples[0].createdAt).getTime();
             const end = new Date(samples[samples.length - 1].createdAt).getTime();
             const hours = (end - start) / (1000 * 60 * 60);
-            return hours.toFixed(1) + ' 撠?';
+            return hours.toFixed(1) + ' 小時';
         }
 
-        // 閮?撟喳?鞈?
+        // 計算平均值
         function calculateAverages(samples) {
             if (samples.length === 0) return { avgMotion: '--', avgSound: '--' };
             
@@ -292,21 +281,24 @@
             };
         }
 
-        // ??甇瑕蝝??
+        // 加載歷史記錄
         function loadHistory() {
             try {
+                // 先清理舊記錄
+                cleanupOldRecords();
+                
                 const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
                 
                 if (trackingSamples.length === 0) {
                     document.getElementById('historyContainer').innerHTML = `
                         <div class="empty-state">
-                            <p>? 撠甇瑕蝝??/p>
+                            <p>暫無歷史紀錄</p>
                         </div>
                     `;
                     return;
                 }
 
-                // ???蝯?
+                // 按日期分組
                 const groupedByDate = {};
                 trackingSamples.forEach(sample => {
                     const date = new Date(sample.createdAt).toLocaleDateString('zh-TW');
@@ -316,29 +308,29 @@
                     groupedByDate[date].push(sample);
                 });
 
-                // 皜脫?甇瑕
+                // 生成歷史列表
                 const historyHtml = Object.entries(groupedByDate)
                     .sort((a, b) => new Date(b[0]) - new Date(a[0]))
                     .map(([date, samples]) => {
                         const { avgMotion, avgSound } = calculateAverages(samples);
                         return `
                             <div class="history-item">
-                                <div class="history-date">?? ${date}</div>
+                                <div class="history-date">📅 ${date}</div>
                                 <div class="history-details">
                                     <div class="detail-item">
-                                        <span class="detail-label">璅???/span>
+                                        <span class="detail-label">樣本數</span>
                                         <span class="detail-value">${samples.length}</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">撟喳???</span>
+                                        <span class="detail-label">平均運動</span>
                                         <span class="detail-value">${avgMotion}</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">撟喳??脤</span>
+                                        <span class="detail-label">平均聲音</span>
                                         <span class="detail-value">${avgSound} dB</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">?∠??</span>
+                                        <span class="detail-label">時長</span>
                                         <span class="detail-value">${calculateSleepDuration(samples)}</span>
                                     </div>
                                 </div>
@@ -348,7 +340,7 @@
 
                 document.getElementById('historyContainer').innerHTML = historyHtml || `
                     <div class="empty-state">
-                        <p>? 蝚血?璇辣?風?脩??蝛?/p>
+                        <p>暫無符合篩選條件的記錄</p>
                     </div>
                 `;
             } catch (e) {
@@ -356,13 +348,13 @@
             }
         }
 
-        // 憟蝭拚
+        // 應用篩選
         function applyFilters() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
 
             if (!startDate || !endDate) {
-                alert('隢??憪?蝯??交?');
+                alert('請選擇開始和結束日期');
                 return;
             }
 
@@ -376,7 +368,7 @@
                     return sampleTime >= start && sampleTime < end;
                 });
 
-                // ???蝯?
+                // 按日期分組
                 const groupedByDate = {};
                 filtered.forEach(sample => {
                     const date = new Date(sample.createdAt).toLocaleDateString('zh-TW');
@@ -386,29 +378,29 @@
                     groupedByDate[date].push(sample);
                 });
 
-                // 皜脫?蝭拚蝯?
+                // 生成篩選後的歷史列表
                 const historyHtml = Object.entries(groupedByDate)
                     .sort((a, b) => new Date(b[0]) - new Date(a[0]))
                     .map(([date, samples]) => {
                         const { avgMotion, avgSound } = calculateAverages(samples);
                         return `
                             <div class="history-item">
-                                <div class="history-date">?? ${date}</div>
+                                <div class="history-date">📅 ${date}</div>
                                 <div class="history-details">
                                     <div class="detail-item">
-                                        <span class="detail-label">璅???/span>
+                                        <span class="detail-label">樣本數</span>
                                         <span class="detail-value">${samples.length}</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">撟喳???</span>
+                                        <span class="detail-label">平均運動</span>
                                         <span class="detail-value">${avgMotion}</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">撟喳??脤</span>
+                                        <span class="detail-label">平均聲音</span>
                                         <span class="detail-value">${avgSound} dB</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">?∠??</span>
+                                        <span class="detail-label">時長</span>
                                         <span class="detail-value">${calculateSleepDuration(samples)}</span>
                                     </div>
                                 </div>
@@ -418,7 +410,7 @@
 
                 document.getElementById('historyContainer').innerHTML = historyHtml || `
                     <div class="empty-state">
-                        <p>? 蝚血?璇辣?風?脩??蝛?/p>
+                        <p>暫無符合篩選條件的記錄</p>
                     </div>
                 `;
             } catch (e) {
@@ -426,18 +418,18 @@
             }
         }
 
-        // ?臬??CSV
+        // 匯出CSV
         function exportAsCSV() {
             try {
                 const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
                 
                 if (trackingSamples.length === 0) {
-                    alert('瘝?鞈??臬??);
+                    alert('沒有可匯出的資料');
                     return;
                 }
 
                 const csv = [
-                    ['?交?', '??', '????, '?脤??(dB)'].join(','),
+                    ['日期', '時間', '運動', '聲音(dB)'].join(','),
                     ...trackingSamples.map(s => {
                         const date = new Date(s.createdAt);
                         return [
@@ -457,17 +449,17 @@
                 URL.revokeObjectURL(link.href);
             } catch (e) {
                 console.error('CSV export error:', e);
-                alert('?臬憭望?');
+                alert('匯出失敗');
             }
         }
 
-        // ?臬??JSON
+        // 匯出JSON
         function exportAsJSON() {
             try {
                 const trackingSamples = localStorage.getItem('trackingSamples');
                 
                 if (!trackingSamples) {
-                    alert('瘝?鞈??臬??);
+                    alert('沒有可匯出的資料');
                     return;
                 }
 
@@ -479,13 +471,15 @@
                 URL.revokeObjectURL(link.href);
             } catch (e) {
                 console.error('JSON export error:', e);
-                alert('?臬憭望?');
+                alert('匯出失敗');
             }
         }
 
-        // ????
+        // 初始化
         initializeDateRange();
         loadHistory();
+        // 每5分鐘自動檢查並清理舊記錄
+        setInterval(cleanupOldRecords, 5 * 60 * 1000);
     </script>
 </body>
 </html>
