@@ -55,12 +55,8 @@ class SleepTrackerApp {
             const runsToday = Array.isArray(alarm.days) && alarm.days.length > 0 ? alarm.days.includes(todayDay) : true;
             if (!runsToday) return;
 
-            // 比對時間：使用 alarm.wakeupTime（HH:MM）或 smartWakeupTime
-            const targetTimes = [];
-            if (alarm.wakeupTime) targetTimes.push(alarm.wakeupTime);
-            if (alarm.smartWakeupTime) targetTimes.push(alarm.smartWakeupTime);
-
-            if (targetTimes.includes(hhmm)) {
+            // 比對時間：僅使用 alarm.wakeupTime（HH:MM）
+            if (alarm.wakeupTime === hhmm) {
                 this.triggerAlarm(alarm);
             }
         });
@@ -80,7 +76,7 @@ class SleepTrackerApp {
             const msg = document.getElementById('alarmRingMessage');
             if (ring) ring.setAttribute('aria-hidden','false');
             if (title) title.textContent = alarm.alarmName || '鬧鐘響起';
-            if (msg) msg.textContent = `時間：${alarm.wakeupTime}（建議 ${alarm.smartWakeupTime || '--:--'}）`;
+            if (msg) msg.textContent = `時間：${alarm.wakeupTime}`;
 
             // 播放鈴聲
             this.playRingtone();
@@ -160,7 +156,7 @@ class SleepTrackerApp {
         if (!this.activeAlarm) return;
         try {
             // 計算新時間
-            const base = this.activeAlarm.wakeupTime || this.activeAlarm.smartWakeupTime;
+            const base = this.activeAlarm.wakeupTime;
             if (!base) return this.stopAlarmSound();
             const [hh, mm] = base.split(':').map(v => Number(v));
             const d = new Date();
@@ -202,7 +198,6 @@ class SleepTrackerApp {
     cacheElements() {
         this.elements = {
             wakeupTimeInput: document.getElementById('wakeupTime'),
-            suggestedTimeDisplay: document.getElementById('suggestedTime'),
             alarmNameInput: document.getElementById('alarmName'),
             dayCheckboxes: document.querySelectorAll('.day-checkbox'),
             saveAlarmBtn: document.getElementById('saveAlarmBtn'),
@@ -220,14 +215,7 @@ class SleepTrackerApp {
      * 綁定事件監聽器
      */
     attachEventListeners() {
-        // 喚醒時間變更時，更新建議時間
-        this.elements.wakeupTimeInput.addEventListener('change', (e) => {
-            this.updateSuggestedTime(e.target.value);
-        });
-
-        this.elements.wakeupTimeInput.addEventListener('input', (e) => {
-            this.updateSuggestedTime(e.target.value);
-        });
+        // 喚醒時間變更：不再更新智能喚醒建議（已移除）
 
         // 保存鬧鐘按鈕
         this.elements.saveAlarmBtn.addEventListener('click', () => this.saveAlarm());
@@ -297,10 +285,7 @@ class SleepTrackerApp {
      * 更新建議喚醒時間顯示
      * @param {string} wakeupTime - 喚醒時間
      */
-    updateSuggestedTime(wakeupTime) {
-        const suggestedTime = AlarmManager.calculateSmartWakeupTime(wakeupTime);
-        this.elements.suggestedTimeDisplay.textContent = suggestedTime;
-    }
+    // 智能喚醒建議已移除
 
     /**
      * 取得選中的日期
@@ -409,7 +394,6 @@ class SleepTrackerApp {
                 this.alarms[alarmIndex] = {
                     ...this.alarms[alarmIndex],
                     ...updatedData,
-                    smartWakeupTime: AlarmManager.calculateSmartWakeupTime(updatedData.wakeupTime),
                 };
 
                 // 同步到 API
@@ -481,7 +465,7 @@ class SleepTrackerApp {
         this.elements.wakeupTimeInput.value = '';
         this.elements.alarmNameInput.value = '';
         this.setSelectedDays([]);
-        this.updateSuggestedTime('');
+        // 智能喚醒已移除，不再更新建議時間
     }
 
     /**
@@ -550,9 +534,9 @@ class SleepTrackerApp {
         return `
             <div class="alarm-item">
                 <div class="alarm-info">
-                    <div class="alarm-time">${alarm.smartWakeupTime}</div>
+                    <div class="alarm-time">${alarm.wakeupTime}</div>
                     <div class="alarm-name">${this.escapeHtml(alarm.alarmName)}</div>
-                    <div class="alarm-suggested">建議時間：${alarm.wakeupTime}</div>
+                    
                     <div class="alarm-days">${dayBadges}</div>
                 </div>
                 <div class="alarm-actions">

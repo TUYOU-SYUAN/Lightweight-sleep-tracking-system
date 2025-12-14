@@ -253,7 +253,7 @@
                 <button class="menu-toggle" id="menuToggle" aria-label="切換功能表">☰</button>
                 <h1>💤 睡眠追蹤系統</h1>
                 <nav class="nav-menu" id="navMenu">
-                    <a href="../index.html" class="nav-link">🏠 首頁</a>
+                    <a href="../index.html" class="nav-link">🎺 鬧鐘</a>
                     <a href="monitoring.html" class="nav-link">👁️ 智能監控</a>
                     <a href="history.html" class="nav-link">📋 歷史</a>
                     <a href="settings.html" class="nav-link active">⚙️ 設定</a>
@@ -603,12 +603,12 @@
         function exportAllData() {
             try {
                 const alarms = localStorage.getItem('alarms');
-                const tracking = localStorage.getItem('trackingSamples');
+                const trackingSessions = localStorage.getItem('trackingSessions');
                 const settings = localStorage.getItem('appSettings');
 
                 const data = {
                     alarms: JSON.parse(alarms || '[]'),
-                    trackingSamples: JSON.parse(tracking || '[]'),
+                    trackingSessions: JSON.parse(trackingSessions || '[]'),
                     appSettings: JSON.parse(settings || '{}'),
                     exportedAt: new Date().toISOString()
                 };
@@ -654,7 +654,8 @@
         function clearHistory() {
             if (confirm('確定要刪除所有追蹤記錄嗎？此操作無法恢復。')) {
                 try {
-                    localStorage.removeItem('trackingSamples');
+                    localStorage.removeItem('trackingSessions');
+                    localStorage.removeItem('trackingSamples'); // 也清除舊的資料結構（如果存在）
                     showSuccessMessage();
                     alert('追蹤記錄已清除');
                 } catch (e) {
@@ -669,7 +670,8 @@
                 if (confirm('這是不可恢復的操作。請再次確認。')) {
                     try {
                         localStorage.removeItem('alarms');
-                        localStorage.removeItem('trackingSamples');
+                        localStorage.removeItem('trackingSessions');
+                        localStorage.removeItem('trackingSamples'); // 也清除舊的資料結構（如果存在）
                         localStorage.removeItem('appSettings');
                         alert('所有資料已清除，頁面將重新加載');
                         window.location.reload();

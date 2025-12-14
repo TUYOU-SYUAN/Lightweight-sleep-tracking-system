@@ -220,45 +220,7 @@ input[type="text"]:focus {
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* ===================================
-   智能喚醒區域
-   =================================== */
-.smart-wake-section {
-    background: #f8f9ff;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    margin: 1.5rem 0;
-    border-left: 4px solid #667eea;
-}
-
-.wake-info p {
-    color: #666;
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
-}
-
-.suggested-time {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: white;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    border: 2px dashed #667eea;
-}
-
-.suggested-time .label {
-    font-weight: 600;
-    color: #333;
-}
-
-.time-display {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #667eea;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 0.1em;
-}
+/* 智能喚醒相關樣式已移除 */
 
 /* ===================================
    複選框樣式

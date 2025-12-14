@@ -4,26 +4,7 @@
  */
 
 const AlarmManager = {
-    /**
-     * 計算建議的智能喚醒時間（提前 30 分鐘）
-     * @param {string} wakeupTime - 最晚喚醒時間 (HH:mm 格式)
-     * @returns {string} - 建議喚醒時間 (HH:mm 格式)
-     */
-    calculateSmartWakeupTime: function(wakeupTime) {
-        if (!wakeupTime) return '--:--';
-
-        const [hours, minutes] = wakeupTime.split(':').map(Number);
-        const date = new Date();
-        date.setHours(hours, minutes, 0, 0);
-
-        // 減去 30 分鐘
-        date.setMinutes(date.getMinutes() - 30);
-
-        const smartHours = String(date.getHours()).padStart(2, '0');
-        const smartMinutes = String(date.getMinutes()).padStart(2, '0');
-
-        return `${smartHours}:${smartMinutes}`;
-    },
+    // 智能喚醒計算已移除
 
     /**
      * 建立鬧鐘物件
@@ -38,12 +19,9 @@ const AlarmManager = {
             enabled = true,
         } = options;
 
-        const smartWakeupTime = this.calculateSmartWakeupTime(wakeupTime);
-
         return {
             id: Date.now(),
             wakeupTime,
-            smartWakeupTime,
             alarmName: alarmName || `鬧鐘 ${new Date().toLocaleTimeString()}`,
             days: Array.isArray(days) ? days : [],
             enabled,
@@ -119,7 +97,7 @@ const AlarmManager = {
         if (!alarm.enabled) return '已禁用';
 
         const today = new Date();
-        const [hours, minutes] = alarm.smartWakeupTime.split(':').map(Number);
+        const [hours, minutes] = (alarm.wakeupTime || '').split(':').map(Number);
         const alarmDate = new Date();
         alarmDate.setHours(hours, minutes, 0, 0);
 
@@ -147,8 +125,8 @@ const AlarmManager = {
      */
     sortAlarms: function(alarms) {
         return [...alarms].sort((a, b) => {
-            const timeA = a.smartWakeupTime.split(':').map(Number);
-            const timeB = b.smartWakeupTime.split(':').map(Number);
+            const timeA = (a.wakeupTime || '00:00').split(':').map(Number);
+            const timeB = (b.wakeupTime || '00:00').split(':').map(Number);
 
             const minutesA = timeA[0] * 60 + timeA[1];
             const minutesB = timeB[0] * 60 + timeB[1];
