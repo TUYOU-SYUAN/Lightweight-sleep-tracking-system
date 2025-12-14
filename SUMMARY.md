@@ -49,13 +49,13 @@
 
 ### 新增檔案 (7 個)
 ```
-✅ frontend/pages/dashboard.html ............ 儀表板頁面
-✅ frontend/pages/history.html ............. 歷史紀錄頁面
-✅ frontend/pages/settings.html ............ 設定頁面
-✅ PAGES_GUIDE.md ........................... 頁面指南
-✅ TEST_CHECKLIST.md ........................ 測試清單
-✅ DASHBOARD_COMPLETION.md ................. 完成報告
-✅ FILE_MANIFEST.md ......................... 檔案清單
+✅ frontend/pages/monitoring.html ......... 智能監控頁面
+✅ frontend/pages/history.html ............ 歷史紀錄頁面
+✅ frontend/pages/settings.html .......... 設定頁面
+✅ PAGES_GUIDE.md .......................... 頁面指南
+✅ TEST_CHECKLIST.md ....................... 測試清單
+✅ SEPARATION_COMPLETION.md ............... 完成報告
+✅ FILE_MANIFEST.md ........................ 檔案清單
 ```
 
 ### 修改檔案 (2 個)
@@ -69,7 +69,7 @@
 📄 QUICK_START.sh ........................... 快速啟動指南
 📄 FINAL_CHECKLIST.md ....................... 最終檢查清單
 📄 FILE_MANIFEST.md ......................... 檔案清單
-📄 COMPLETION_SUMMARY.md ................... 完成摘要
+📄 SUMMARY.md .............................. 完成摘要
 📄 PAGES_GUIDE.md ........................... 完整說明
 ```
 
@@ -77,19 +77,20 @@
 
 ## 🎨 功能完成度
 
-### 儀表板 (Dashboard)
+### 智能監控 (Monitoring)
 ```
 ┌──────────────────────────────────────┐
-│ 📊 儀表板                           │
+│ 👁️ 智能監控                        │
 ├──────────────────────────────────────┤
-│ ✅ 4 個關鍵指標卡片               │
-│ ✅ 5 項統計資訊區                 │
-│ ✅ 4 個快速操作按鈕               │
-│ ✅ 最近鬧鐘清單                   │
-│ ✅ 資料匯出 (JSON)                │
-│ ✅ 空狀態提示                     │
-│ ✅ 導航菜單集成                   │
-│ ✅ 響應式佈局                     │
+│ ✅ 追蹤控制（開始/停止）            │
+│ ✅ 當前睡眠狀態分析                 │
+│ ✅ 監控統計資訊                     │
+│ ✅ 警報事件檢測                     │
+│ ✅ 睡眠品質指標                     │
+│ ✅ 狀態變化趨勢                     │
+│ ✅ 實時監控數據                     │
+│ ✅ 導航菜單集成                     │
+│ ✅ 響應式佈局                       │
 └──────────────────────────────────────┘
 ```
 
@@ -327,7 +328,7 @@
 |------|------|------|
 | PAGES_GUIDE.md | 完整頁面說明 | 350+ |
 | TEST_CHECKLIST.md | 測試驗證清單 | 280+ |
-| DASHBOARD_COMPLETION.md | 完成報告 | 380+ |
+| SEPARATION_COMPLETION.md | 完成報告 | 380+ |
 | FILE_MANIFEST.md | 檔案清單 | 350+ |
 | FINAL_CHECKLIST.md | 最終檢查 | 420+ |
 | QUICK_START.sh | 啟動指南 | 100+ |
@@ -367,7 +368,7 @@ python -m http.server 8000
 
 ### 測試頁面
 - 首頁: http://localhost:8000
-- 儀表板: http://localhost:8000/pages/dashboard.html
+- 智能監控: http://localhost:8000/pages/monitoring.html
 - 歷史: http://localhost:8000/pages/history.html
 - 設定: http://localhost:8000/pages/settings.html
 

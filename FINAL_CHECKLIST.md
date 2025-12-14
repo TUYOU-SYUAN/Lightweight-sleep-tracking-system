@@ -3,8 +3,8 @@
 ### ✅ 已完成所有項目
 
 #### 📄 頁面創建 (3 個新頁面)
-- [x] `frontend/pages/dashboard.html` (281 行)
-  - 儀表板卡片、統計資訊、快速操作、匯出功能
+- [x] `frontend/pages/monitoring.html` (726 行)
+  - 追蹤控制、睡眠狀態、警報檢測、品質指標、趨勢圖表、實時數據
   
 - [x] `frontend/pages/history.html` (410 行)
   - 日期篩選、歷史記錄清單、CSV/JSON 匯出
@@ -40,7 +40,7 @@
 #### 📝 文件撰寫
 - [x] `PAGES_GUIDE.md` - 完整說明文件
 - [x] `TEST_CHECKLIST.md` - 測試清單
-- [x] `DASHBOARD_COMPLETION.md` - 完成報告
+- [x] `SEPARATION_COMPLETION.md` - 完成報告
 - [x] `QUICK_START.sh` - 快速啟動指南
 
 #### 🔧 代碼品質
@@ -158,7 +158,7 @@
 |------|------|------|
 | PAGES_GUIDE.md | 頁面說明、架構、使用指南 | ✅ |
 | TEST_CHECKLIST.md | 測試項目清單 | ✅ |
-| DASHBOARD_COMPLETION.md | 完成報告、摘要 | ✅ |
+| SEPARATION_COMPLETION.md | 完成報告、摘要 | ✅ |
 | QUICK_START.sh | 快速啟動指南 | ✅ |
 
 ---
