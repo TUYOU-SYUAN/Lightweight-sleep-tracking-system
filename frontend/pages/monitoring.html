@@ -261,10 +261,7 @@
                         <span class="info-label">狀態</span>
                         <span class="info-value" id="trackingStatus">未啟動</span>
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">採樣數量</span>
-                        <span class="info-value" id="sampleCount">0</span>
-                    </div>
+                    <!-- 採樣數量顯示已移除 -->
                     <div class="info-item">
                         <span class="info-label">運行時間</span>
                         <span class="info-value" id="runningTime">00:00</span>
@@ -303,10 +300,7 @@
                             <span>清醒狀態:</span>
                             <strong id="awakePercent">--%</strong>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ddd;">
-                            <span>樣本總數:</span>
-                            <strong id="totalSamples">0</strong>
-                        </div>
+                        <!-- 樣本總數顯示已移除 -->
                     </div>
                 </div>
             </div>
@@ -447,6 +441,32 @@
                     trackingActive = true;
                     trackingStartTime = Date.now();
                     sampleBuffer = [];
+                    // 重置監控相關記錄：聲音/打鼾計數、趨勢、即時面板與警報緩衝
+                    monitoringData = [];
+                    alerts = [];
+                    pendingAlerts = [];
+                    // 清空警報列表 UI
+                    const alertListEl = document.getElementById('alertList');
+                    if (alertListEl) {
+                        alertListEl.innerHTML = `
+                            <div class="empty-alert">
+                                <p>無警報事件記錄</p>
+                                <p style="font-size: 0.85rem; margin-top: 0.5rem;">啟動追蹤後會開始檢測</p>
+                            </div>
+                        `;
+                    }
+                    // 重設顯示數值
+                    const setIf = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+                    setIf('snoreCount', '0');
+                    setIf('soundAnomalies', '0');
+                    setIf('latestMotion', '--');
+                    setIf('latestSound', '-- dB');
+                    setIf('avgMotionMonitor', '--');
+                    setIf('avgSoundMonitor', '-- dB');
+                    const trendEl = document.getElementById('trendChart'); if (trendEl) trendEl.innerHTML = '[狀態變化趨勢圖表 - 啟動追蹤後會顯示]';
+                    const sleepStateEl = document.getElementById('sleepStateDisplay'); if (sleepStateEl) { sleepStateEl.textContent = '清醒'; sleepStateEl.className = 'sleep-state awake'; }
+                    const stateDescEl = document.getElementById('stateDescription'); if (stateDescEl) stateDescEl.textContent = '無追蹤數據';
+
                     setTrackingUI(true);
 
                     const started = await tracker.startTracking({
@@ -469,7 +489,6 @@
 
                             sampleBuffer.push(sample);
                             monitoringData.push(sample);
-                            updateTrackingDisplay(sample);
                             updateMonitoringDisplay();
                         }
                     });
@@ -537,10 +556,7 @@
             }
         }
 
-        function updateTrackingDisplay(sample) {
-            // 更新計數
-            document.getElementById('sampleCount').textContent = sampleBuffer.length;
-        }
+        // `sampleCount` 已移除；不再顯示或更新採樣數量
 
         function updateMonitoringDisplay() {
             if (monitoringData.length === 0) {
@@ -604,7 +620,7 @@
             const motionSamples = samples.filter(s => s.motion);
             
             if (motionSamples.length === 0) {
-                document.getElementById('totalSamples').textContent = '0';
+                // 若無運動樣本則不更新樣本總數（顯示已移除）
                 return;
             }
 
@@ -628,7 +644,7 @@
                 Math.round((lightCount / total) * 100) + '%';
             document.getElementById('awakePercent').textContent = 
                 Math.round((awakeCount / total) * 100) + '%';
-            document.getElementById('totalSamples').textContent = total;
+            // `totalSamples` 已移除，故不顯示總樣本數
 
             // 計算品質指標
             const stability = (deepCount / total) * 100;
