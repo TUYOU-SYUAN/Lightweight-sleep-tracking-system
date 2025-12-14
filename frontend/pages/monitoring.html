@@ -762,64 +762,152 @@
         }
 
         function updateTrendChart() {
-            const canvas = document.getElementById('trendChart');
-            if (!canvas) return;
+            const container = document.getElementById('trendChart');
+            if (!container) return;
 
             if (monitoringData.length < 5) {
-                canvas.innerHTML = '[狀態變化趨勢圖表 - 需要更多數據]';
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #999;">需要更多數據以顯示圖表</div>';
                 return;
             }
 
-            // 簡化趨勢圖：使用 ASCII 或簡單視覺表示
+            // 提取運動數據
             const motionValues = monitoringData
                 .filter(s => s.motion)
                 .map(s => s.motion.magnitude || 0);
 
             if (motionValues.length === 0) return;
 
-            // 分組運動幅度為狀態
-            const groupSize = Math.max(1, Math.floor(motionValues.length / 20));
-            const stateSequence = [];
-            const timepoints = [];
+            // 分組數據以簡化圖表
+            const groupSize = Math.max(1, Math.floor(motionValues.length / 30));
+            const groupedValues = [];
+            const timeLabels = [];
 
             for (let i = 0; i < motionValues.length; i += groupSize) {
                 const group = motionValues.slice(i, i + groupSize);
-                const variance = calculateVariance(group);
-                
-                if (variance < 0.5) {
-                    stateSequence.push('深眠');
-                } else if (variance < 2.5) {
-                    stateSequence.push('淺眠');
-                } else {
-                    stateSequence.push('清醒');
-                }
-                timepoints.push(Math.round(i / 10) + 's');
+                const avgValue = group.reduce((a, b) => a + b) / group.length;
+                groupedValues.push(avgValue);
+                timeLabels.push(Math.round(i / 10) + 's');
             }
 
-            // 生成簡單視覺表示
-            let html = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
-            html += '<div style="display: flex; align-items: center; height: 30px; overflow-x: auto;">';
+            // 繪製折線圖
+            const canvasWidth = container.clientWidth || 600;
+            const canvasHeight = 300;
             
-            stateSequence.forEach((state, idx) => {
-                let color = '#4CAF50'; // 深眠
-                let text = '🟢';
-                if (state === '淺眠') {
-                    color = '#667eea';
-                    text = '🟡';
-                } else if (state === '清醒') {
-                    color = '#ff9800';
-                    text = '🔴';
+            // 清空容器並創建 canvas
+            container.innerHTML = `<canvas id="trendCanvas" width="${canvasWidth}" height="${canvasHeight}"></canvas>`;
+            
+            const canvas = document.getElementById('trendCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 繪製圖表背景
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            
+            // 邊距設置
+            const margin = 40;
+            const plotWidth = canvasWidth - margin * 2;
+            const plotHeight = canvasHeight - margin * 2;
+            
+            // 找出數據範圍
+            const maxValue = Math.max(...groupedValues);
+            const minValue = 0;
+            const valueRange = maxValue - minValue || 1;
+            
+            // 繪製坐標軸
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, canvasHeight - margin);
+            ctx.lineTo(canvasWidth - margin, canvasHeight - margin);
+            ctx.stroke();
+            
+            // 繪製網格線
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 5; i++) {
+                const y = margin + (plotHeight / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(margin, y);
+                ctx.lineTo(canvasWidth - margin, y);
+                ctx.stroke();
+            }
+            
+            // 繪製坐標標籤
+            ctx.fillStyle = '#999';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'right';
+            
+            // Y 軸標籤
+            for (let i = 0; i <= 5; i++) {
+                const value = maxValue - (maxValue / 5) * i;
+                const y = margin + (plotHeight / 5) * i;
+                ctx.fillText(value.toFixed(1), margin - 10, y + 4);
+            }
+            
+            // X 軸標籤（每 5 個點顯示一個）
+            ctx.textAlign = 'center';
+            for (let i = 0; i < timeLabels.length; i += Math.max(1, Math.floor(timeLabels.length / 6))) {
+                const x = margin + (plotWidth / (groupedValues.length - 1)) * i;
+                ctx.fillText(timeLabels[i], x, canvasHeight - margin + 20);
+            }
+            
+            // 繪製數據點和折線
+            ctx.strokeStyle = '#667eea';
+            ctx.fillStyle = '#667eea';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            
+            groupedValues.forEach((value, idx) => {
+                const x = margin + (plotWidth / (groupedValues.length - 1)) * idx;
+                const y = canvasHeight - margin - ((value - minValue) / valueRange) * plotHeight;
+                
+                if (idx === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
                 }
-                html += `<span style="margin: 0 2px; font-size: 1.2rem;">${text}</span>`;
             });
-
-            html += '</div>';
-            html += '<div style="font-size: 0.85rem; color: #999;">';
-            html += '<span>🟢=深眠 🟡=淺眠 🔴=清醒</span>';
-            html += '</div>';
-            html += '</div>';
-
-            canvas.innerHTML = html;
+            
+            ctx.stroke();
+            
+            // 繪製數據點
+            groupedValues.forEach((value, idx) => {
+                const x = margin + (plotWidth / (groupedValues.length - 1)) * idx;
+                const y = canvasHeight - margin - ((value - minValue) / valueRange) * plotHeight;
+                
+                // 根據方差確定顏色
+                let pointColor = '#4CAF50'; // 深眠
+                if (value > 1.5) {
+                    pointColor = '#667eea'; // 淺眠
+                }
+                if (value > 3) {
+                    pointColor = '#ff9800'; // 清醒
+                }
+                
+                ctx.fillStyle = pointColor;
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // 添加圖例
+            const legendY = canvasHeight - margin + 45;
+            const legendItems = [
+                { label: '深眠 (變異數 < 0.5)', color: '#4CAF50' },
+                { label: '淺眠 (變異數 0.5-2.5)', color: '#667eea' },
+                { label: '清醒 (變異數 > 2.5)', color: '#ff9800' }
+            ];
+            
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'left';
+            legendItems.forEach((item, idx) => {
+                ctx.fillStyle = item.color;
+                ctx.fillRect(margin + idx * 150, legendY, 12, 12);
+                ctx.fillStyle = '#666';
+                ctx.fillText(item.label, margin + idx * 150 + 18, legendY + 10);
+            });
         }
 
         // 新版警報：先推入緩衝 pendingAlerts，並以每分鐘批次刷新顯示。
