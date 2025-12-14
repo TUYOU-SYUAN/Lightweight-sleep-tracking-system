@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>睡眠追蹤 - 儀表板</title>
+    <title>?∠?餈質馱 - ?銵冽</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
         .dashboard-grid {
@@ -128,118 +128,117 @@
     <main class="container">
         <header class="app-header">
             <div class="nav-container">
-                <button class="menu-toggle" id="menuToggle" aria-label="切換功能表">☰</button>
-                <h1>💤 睡眠追蹤系統</h1>
+                <button class="menu-toggle" id="menuToggle" aria-label="???銵?>??/button>
+                <h1>? ?∠?餈質馱蝟餌絞</h1>
                 <nav class="nav-menu" id="navMenu">
-                    <a href="../index.html" class="nav-link">🏠 首頁</a>
-                    <a href="tracking.html" class="nav-link">📡 追蹤感測</a>
-                    <a href="monitoring.html" class="nav-link">👁️ 智能監控</a>
-                    <a href="dashboard.html" class="nav-link active">📊 儀表板</a>
-                    <a href="history.html" class="nav-link">📋 歷史</a>
-                    <a href="settings.html" class="nav-link">⚙️ 設定</a>
+                    <a href="../index.html" class="nav-link">?? 擐?</a>
+                    <a href="monitoring.html" class="nav-link">??儭??箄??</a>
+                    <a href="dashboard.html" class="nav-link active">?? ?銵冽</a>
+                    <a href="history.html" class="nav-link">?? 甇瑕</a>
+                    <a href="settings.html" class="nav-link">?? 閮剖?</a>
                 </nav>
             </div>
-            <p class="subtitle">睡眠追蹤概覽</p>
+            <p class="subtitle">?∠?餈質馱璁汗</p>
         </header>
 
         <div class="content">
-            <!-- 關鍵指標 -->
+            <!-- ??? -->
             <div class="dashboard-grid">
                 <div class="dashboard-card">
-                    <div class="card-icon">📅</div>
-                    <div class="card-label">設定的鬧鐘</div>
+                    <div class="card-icon">??</div>
+                    <div class="card-label">閮剖??洹??/div>
                     <div class="card-value" id="totalAlarms">0</div>
-                    <div class="card-meta">已啟用</div>
+                    <div class="card-meta">撌脣???/div>
                 </div>
 
                 <div class="dashboard-card">
-                    <div class="card-icon">🌙</div>
-                    <div class="card-label">這週追蹤</div>
+                    <div class="card-icon">??</div>
+                    <div class="card-label">?梯蕭頩?/div>
                     <div class="card-value" id="weeklyTracking">0</div>
-                    <div class="card-meta">次</div>
+                    <div class="card-meta">甈?/div>
                 </div>
 
                 <div class="dashboard-card">
-                    <div class="card-icon">⏰</div>
-                    <div class="card-label">平均睡眠</div>
+                    <div class="card-icon">??/div>
+                    <div class="card-label">撟喳??∠?</div>
                     <div class="card-value" id="avgSleep">--</div>
-                    <div class="card-meta">小時</div>
+                    <div class="card-meta">撠?</div>
                 </div>
 
                 <div class="dashboard-card">
-                    <div class="card-icon">🎯</div>
-                    <div class="card-label">追蹤狀態</div>
-                    <div class="card-value" id="trackingStatus" style="color: #ff9800;">離線</div>
-                    <div class="card-meta">點擊應用頁啟動</div>
+                    <div class="card-icon">?</div>
+                    <div class="card-label">餈質馱???/div>
+                    <div class="card-value" id="trackingStatus" style="color: #ff9800;">?Ｙ?</div>
+                    <div class="card-meta">暺??????/div>
                 </div>
             </div>
 
-            <!-- 統計資訊 -->
+            <!-- 蝯梯?鞈? -->
             <div class="stats-section">
-                <h3>📊 近期統計</h3>
+                <h3>?? 餈?蝯梯?</h3>
                 <div class="stat-item">
-                    <span class="stat-label">今日早起次數</span>
+                    <span class="stat-label">隞?抵絲甈⊥</span>
                     <span class="stat-value" id="todayWakeups">0</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">這月平均睡眠時數</span>
-                    <span class="stat-value" id="monthAvgSleep">-- 小時</span>
+                    <span class="stat-label">??撟喳??∠??</span>
+                    <span class="stat-value" id="monthAvgSleep">-- 撠?</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">最常設定時間</span>
+                    <span class="stat-label">?撣貉身摰???/span>
                     <span class="stat-value" id="commonTime">--:--</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">本週打鼾偵測</span>
+                    <span class="stat-label">?祇望?曌曉皜?/span>
                     <span class="stat-value" id="snoreCount">0</span>
                 </div>
             </div>
 
-            <!-- 快速操作 -->
+            <!-- 敹恍?雿?-->
             <div class="quick-actions">
                 <button class="action-btn" onclick="window.location.href='../index.html'">
-                    🚀 回到應用
+                    ?? ??
                 </button>
                 <button class="action-btn" onclick="window.location.href='history.html'">
-                    📋 查看歷史
+                    ?? ?亦?甇瑕
                 </button>
                 <button class="action-btn" onclick="window.location.href='settings.html'">
-                    ⚙️ 設定頁面
+                    ?? 閮剖??
                 </button>
                 <button class="action-btn" onclick="exportData()">
-                    💾 匯出資料
+                    ? ?臬鞈?
                 </button>
             </div>
 
-            <!-- 最近的鬧鐘 -->
+            <!-- ?餈?擛折? -->
             <div class="stats-section">
-                <h3>🔔 最近的鬧鐘</h3>
+                <h3>?? ?餈?擛折?</h3>
                 <div id="recentAlarms" style="padding: 1rem 0;">
-                    <p style="color: #999; text-align: center;">尚無鬧鐘記錄</p>
+                    <p style="color: #999; text-align: center;">撠擛折?閮?</p>
                 </div>
             </div>
         </div>
 
         <footer class="app-footer">
-            <p>輕量睡眠追蹤系統 v1.0 | 儀表板</p>
+            <p>頛??∠?餈質馱蝟餌絞 v1.0 | ?銵冽</p>
         </footer>
     </main>
 
     <script>
-        // 手機導航功能
+        // ??撠?
         document.getElementById('menuToggle').addEventListener('click', function() {
             const navMenu = document.getElementById('navMenu');
             navMenu.classList.toggle('active');
         });
 
-        // 點擊導航項目時關閉菜單
+        // 暺?撠???????
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function() {
                 document.getElementById('navMenu').classList.remove('active');
             });
         });
 
-        // 點擊頁面其他地方關閉菜單
+        // 暺???嗡??唳???
         document.addEventListener('click', function(e) {
             const navMenu = document.getElementById('navMenu');
             const menuToggle = document.getElementById('menuToggle');
@@ -249,24 +248,24 @@
         });
     </script>
 
-        // 載入儀表板資料
+        // 頛?銵冽鞈?
         function loadDashboardData() {
             try {
-                // 載入鬧鐘
+                // 頛擛折?
                 const alarms = JSON.parse(localStorage.getItem('alarms') || '[]');
                 document.getElementById('totalAlarms').textContent = alarms.filter(a => a.enabled !== false).length;
 
-                // 計算這週追蹤次數
+                // 閮??梯蕭頩斗活??
                 const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
                 const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
                 const weeklyCount = trackingSamples.filter(s => new Date(s.createdAt).getTime() > weekAgo).length;
                 document.getElementById('weeklyTracking').textContent = weeklyCount;
 
-                // 顯示最近的鬧鐘
+                // 憿舐內?餈?擛折?
                 if (alarms.length > 0) {
                     const recent = alarms.slice(0, 3).map(a => `
                         <div class="stat-item">
-                            <span class="stat-label">${a.alarmName || '鬧鐘'}</span>
+                            <span class="stat-label">${a.alarmName || '擛折?'}</span>
                             <span class="stat-value">${a.wakeupTime} (${a.smartWakeupTime || '--:--'})</span>
                         </div>
                     `).join('');
@@ -277,7 +276,7 @@
             }
         }
 
-        // 匯出資料
+        // ?臬鞈?
         function exportData() {
             try {
                 const alarms = localStorage.getItem('alarms');
@@ -294,14 +293,14 @@
                 a.download = `sleep-tracker-${Date.now()}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
-                alert('資料已匯出');
+                alert('鞈?撌脣??);
             } catch (e) {
                 console.error('Export error:', e);
-                alert('匯出失敗');
+                alert('?臬憭望?');
             }
         }
 
-        // 初始化
+        // ????
         loadDashboardData();
     </script>
 </body>

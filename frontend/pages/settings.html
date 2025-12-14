@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>睡眠追蹤 - 設定</title>
+    <title>?∠?餈質馱 - 閮剖?</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
         .settings-section {
@@ -183,33 +183,31 @@
     <main class="container">
         <header class="app-header">
             <div class="nav-container">
-                <button class="menu-toggle" id="menuToggle" aria-label="切換功能表">☰</button>
-                <h1>💤 睡眠追蹤系統</h1>
+                <button class="menu-toggle" id="menuToggle" aria-label="???銵?>??/button>
+                <h1>? ?∠?餈質馱蝟餌絞</h1>
                 <nav class="nav-menu" id="navMenu">
-                    <a href="../index.html" class="nav-link">🏠 首頁</a>
-                    <a href="tracking.html" class="nav-link">📡 追蹤感測</a>
-                    <a href="monitoring.html" class="nav-link">👁️ 智能監控</a>
-                    <a href="dashboard.html" class="nav-link">📊 儀表板</a>
-                    <a href="history.html" class="nav-link">📋 歷史</a>
-                    <a href="settings.html" class="nav-link active">⚙️ 設定</a>
+                    <a href="../index.html" class="nav-link">?? 擐?</a>
+                    <a href="monitoring.html" class="nav-link">智能監控</a>
+                    <a href="history.html" class="nav-link">歷史</a>
+                    <a href="settings.html" class="nav-link active">設定</a>
                 </nav>
             </div>
-            <p class="subtitle">管理應用程式設定</p>
+            <p class="subtitle">蝞∠??蝔?閮剖?</p>
         </header>
 
         <div class="content">
             <div class="success-message" id="successMsg">
-                ✅ 設定已保存
+                ??閮剖?撌脖?摮?
             </div>
 
-            <!-- 鬧鐘設定 -->
+            <!-- 擛折?閮剖? -->
             <div class="settings-section">
-                <h3>🔔 鬧鐘設定</h3>
+                <h3>?? 擛折?閮剖?</h3>
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">鈴聲音量</div>
-                        <div class="setting-label-desc">調整鬧鐘鈴聲音量</div>
+                        <div class="setting-label-title">?渲?喲?</div>
+                        <div class="setting-label-desc">隤踵擛折??渲?喲?</div>
                     </div>
                     <div class="setting-control">
                         <input type="range" id="volumeSlider" min="0" max="100" value="70" step="10">
@@ -219,32 +217,32 @@
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">時間格式</div>
-                        <div class="setting-label-desc">12 小時或 24 小時制</div>
+                        <div class="setting-label-title">???澆?</div>
+                        <div class="setting-label-desc">12 撠???24 撠???/div>
                     </div>
                     <div class="setting-control">
                         <select class="select-control" id="timeFormat">
-                            <option value="24h">24 小時制</option>
-                            <option value="12h">12 小時制</option>
+                            <option value="24h">24 撠???/option>
+                            <option value="12h">12 撠???/option>
                         </select>
                     </div>
                 </div>
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">鬧鐘前提醒</div>
-                        <div class="setting-label-desc">提前多少分鐘預通知</div>
+                        <div class="setting-label-title">擛折?????/div>
+                        <div class="setting-label-desc">??憭????</div>
                     </div>
                     <div class="setting-control">
                         <input type="number" id="advanceNotify" min="0" max="30" value="5" step="1">
-                        <span>分鐘</span>
+                        <span>??</span>
                     </div>
                 </div>
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">啟用鬧鐘通知</div>
-                        <div class="setting-label-desc">接收鬧鐘通知</div>
+                        <div class="setting-label-title">?擛折??</div>
+                        <div class="setting-label-desc">?交擛折??</div>
                     </div>
                     <div class="setting-control">
                         <div class="toggle-switch active" id="enableNotification" onclick="toggleNotification(this)"></div>
@@ -252,14 +250,14 @@
                 </div>
             </div>
 
-            <!-- 追蹤設定 -->
+            <!-- 餈質馱閮剖? -->
             <div class="settings-section">
-                <h3>📊 追蹤設定</h3>
+                <h3>?? 餈質馱閮剖?</h3>
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">取樣頻率</div>
-                        <div class="setting-label-desc">每秒採樣次數 (Hz)</div>
+                        <div class="setting-label-title">?見?餌?</div>
+                        <div class="setting-label-desc">瘥??⊥見甈⊥ (Hz)</div>
                     </div>
                     <div class="setting-control">
                         <select class="select-control" id="samplingRate">
@@ -273,30 +271,30 @@
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">運動敏感度</div>
-                        <div class="setting-label-desc">檢測運動變化的靈敏度</div>
+                        <div class="setting-label-title">????摨?/div>
+                        <div class="setting-label-desc">瑼Ｘ葫??霈????漲</div>
                     </div>
                     <div class="setting-control">
                         <input type="range" id="motionSensitivity" min="1" max="10" value="5" step="1">
-                        <span class="range-value" id="motionValue">中等</span>
+                        <span class="range-value" id="motionValue">銝剔?</span>
                     </div>
                 </div>
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">聲音敏感度</div>
-                        <div class="setting-label-desc">檢測聲音變化的靈敏度</div>
+                        <div class="setting-label-title">?脤??摨?/div>
+                        <div class="setting-label-desc">瑼Ｘ葫?脤霈????漲</div>
                     </div>
                     <div class="setting-control">
                         <input type="range" id="soundSensitivity" min="1" max="10" value="5" step="1">
-                        <span class="range-value" id="soundValue">中等</span>
+                        <span class="range-value" id="soundValue">銝剔?</span>
                     </div>
                 </div>
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">啟用自動追蹤</div>
-                        <div class="setting-label-desc">應用啟動時自動開始追蹤</div>
+                        <div class="setting-label-title">??芸?餈質馱</div>
+                        <div class="setting-label-desc">??????憪蕭頩?/div>
                     </div>
                     <div class="setting-control">
                         <div class="toggle-switch" id="autoTracking" onclick="toggleAutoTracking(this)"></div>
@@ -304,14 +302,14 @@
                 </div>
             </div>
 
-            <!-- 主題設定 -->
+            <!-- 銝駁?閮剖? -->
             <div class="settings-section">
-                <h3>🎨 主題設定</h3>
+                <h3>? 銝駁?閮剖?</h3>
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">深色模式</div>
-                        <div class="setting-label-desc">啟用深色主題</div>
+                        <div class="setting-label-title">瘛梯璅∪?</div>
+                        <div class="setting-label-desc">?瘛梯銝駁?</div>
                     </div>
                     <div class="setting-control">
                         <div class="toggle-switch" id="darkMode" onclick="toggleDarkMode(this)"></div>
@@ -319,14 +317,14 @@
                 </div>
             </div>
 
-            <!-- 資料管理 -->
+            <!-- 鞈?蝞∠? -->
             <div class="settings-section">
-                <h3>💾 資料管理</h3>
+                <h3>? 鞈?蝞∠?</h3>
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">匯出所有資料</div>
-                        <div class="setting-label-desc">將所有鬧鐘和追蹤資料匯出</div>
+                        <div class="setting-label-title">?臬?????/div>
+                        <div class="setting-label-desc">撠??洹??餈質馱鞈??臬</div>
                     </div>
                     <div class="setting-control">
                         <button onclick="exportAllData()" style="
@@ -338,14 +336,14 @@
                             cursor: pointer;
                             min-height: 44px;
                             font-weight: 600;
-                        ">匯出</button>
+                        ">?臬</button>
                     </div>
                 </div>
 
                 <div class="setting-item">
                     <div class="setting-label">
-                        <div class="setting-label-title">清空所有歷史記錄</div>
-                        <div class="setting-label-desc">刪除所有追蹤樣本記錄</div>
+                        <div class="setting-label-title">皜征??風?脰???/div>
+                        <div class="setting-label-desc">?芷??蕭頩斗見?祈???/div>
                     </div>
                     <div class="setting-control">
                         <button onclick="clearHistory()" style="
@@ -357,38 +355,38 @@
                             cursor: pointer;
                             min-height: 44px;
                             font-weight: 600;
-                        ">清空</button>
+                        ">皜征</button>
                     </div>
                 </div>
 
                 <div class="danger-zone">
-                    <strong style="color: #cc0000;">⚠️ 危險區</strong>
-                    <div class="setting-label-desc">不可復原的操作</div>
-                    <button class="danger-btn" onclick="clearAllData()">清空所有資料</button>
+                    <strong style="color: #cc0000;">?? ?梢?</strong>
+                    <div class="setting-label-desc">銝敺拙???雿?/div>
+                    <button class="danger-btn" onclick="clearAllData()">皜征?????/button>
                 </div>
             </div>
         </div>
 
         <footer class="app-footer">
-            <p>輕量睡眠追蹤系統 v1.0 | 設定</p>
+            <p>頛??∠?餈質馱蝟餌絞 v1.0 | 閮剖?</p>
         </footer>
     </main>
 
     <script>
-        // 手機導航功能
+        // ??撠?
         document.getElementById('menuToggle').addEventListener('click', function() {
             const navMenu = document.getElementById('navMenu');
             navMenu.classList.toggle('active');
         });
 
-        // 點擊導航項目時關閉菜單
+        // 暺?撠???????
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function() {
                 document.getElementById('navMenu').classList.remove('active');
             });
         });
 
-        // 點擊頁面其他地方關閉菜單
+        // 暺???嗡??唳???
         document.addEventListener('click', function(e) {
             const navMenu = document.getElementById('navMenu');
             const menuToggle = document.getElementById('menuToggle');
@@ -398,46 +396,46 @@
         });
     </script>
 
-        // 載入設定
+        // 頛閮剖?
         function loadSettings() {
             try {
                 const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
 
-                // 音量
+                // ?喲?
                 const volume = settings.volume || 70;
                 document.getElementById('volumeSlider').value = volume;
                 document.getElementById('volumeValue').textContent = volume + '%';
 
-                // 時間格式
+                // ???澆?
                 document.getElementById('timeFormat').value = settings.timeFormat || '24h';
 
-                // 提前通知
+                // ???
                 document.getElementById('advanceNotify').value = settings.advanceNotify || 5;
 
-                // 啟用通知
+                // ??
                 if (settings.enableNotification !== false) {
                     document.getElementById('enableNotification').classList.add('active');
                 }
 
-                // 取樣頻率
+                // ?見?餌?
                 document.getElementById('samplingRate').value = settings.samplingRate || 10;
 
-                // 運動敏感度
+                // ????摨?
                 const motionSens = settings.motionSensitivity || 5;
                 document.getElementById('motionSensitivity').value = motionSens;
                 updateMotionLabel(motionSens);
 
-                // 聲音敏感度
+                // ?脤??摨?
                 const soundSens = settings.soundSensitivity || 5;
                 document.getElementById('soundSensitivity').value = soundSens;
                 updateSoundLabel(soundSens);
 
-                // 自動追蹤
+                // ?芸?餈質馱
                 if (settings.autoTracking) {
                     document.getElementById('autoTracking').classList.add('active');
                 }
 
-                // 深色模式
+                // 瘛梯璅∪?
                 if (settings.darkMode) {
                     document.getElementById('darkMode').classList.add('active');
                     document.body.classList.add('dark-mode');
@@ -447,7 +445,7 @@
             }
         }
 
-        // 儲存設定
+        // ?脣?閮剖?
         function saveSettings() {
             try {
                 const settings = {
@@ -466,76 +464,76 @@
                 showSuccessMessage();
             } catch (e) {
                 console.error('Error saving settings:', e);
-                alert('儲存失敗');
+                alert('?脣?憭望?');
             }
         }
 
-        // 音量滑塊
+        // ?喲?皛?
         document.getElementById('volumeSlider').addEventListener('input', (e) => {
             document.getElementById('volumeValue').textContent = e.target.value + '%';
             saveSettings();
         });
 
-        // 時間格式
+        // ???澆?
         document.getElementById('timeFormat').addEventListener('change', saveSettings);
 
-        // 提前通知
+        // ???
         document.getElementById('advanceNotify').addEventListener('change', saveSettings);
 
-        // 取樣頻率
+        // ?見?餌?
         document.getElementById('samplingRate').addEventListener('change', saveSettings);
 
-        // 運動敏感度
+        // ????摨?
         document.getElementById('motionSensitivity').addEventListener('input', (e) => {
             updateMotionLabel(e.target.value);
             saveSettings();
         });
 
-        // 聲音敏感度
+        // ?脤??摨?
         document.getElementById('soundSensitivity').addEventListener('input', (e) => {
             updateSoundLabel(e.target.value);
             saveSettings();
         });
 
-        // 更新運動敏感度標籤
+        // ?湔????摨行?蝐?
         function updateMotionLabel(value) {
-            const labels = ['', '非常低', '低', '較低', '低中', '中等', '中高', '較高', '高', '非常高', '極高'];
-            document.getElementById('motionValue').textContent = labels[value] || '中等';
+            const labels = ['', '?虜雿?, '雿?, '頛?', '雿葉', '銝剔?', '銝剝?', '頛?', '擃?, '?虜擃?, '璆菟?'];
+            document.getElementById('motionValue').textContent = labels[value] || '銝剔?';
         }
 
-        // 更新聲音敏感度標籤
+        // ?湔?脤??摨行?蝐?
         function updateSoundLabel(value) {
-            const labels = ['', '非常低', '低', '較低', '低中', '中等', '中高', '較高', '高', '非常高', '極高'];
-            document.getElementById('soundValue').textContent = labels[value] || '中等';
+            const labels = ['', '?虜雿?, '雿?, '頛?', '雿葉', '銝剔?', '銝剝?', '頛?', '擃?, '?虜擃?, '璆菟?'];
+            document.getElementById('soundValue').textContent = labels[value] || '銝剔?';
         }
 
-        // 切換通知
+        // ???
         function toggleNotification(el) {
             el.classList.toggle('active');
             saveSettings();
         }
 
-        // 切換自動追蹤
+        // ???芸?餈質馱
         function toggleAutoTracking(el) {
             el.classList.toggle('active');
             saveSettings();
         }
 
-        // 切換深色模式
+        // ??瘛梯璅∪?
         function toggleDarkMode(el) {
             el.classList.toggle('active');
             document.body.classList.toggle('dark-mode');
             saveSettings();
         }
 
-        // 顯示成功訊息
+        // 憿舐內??閮
         function showSuccessMessage() {
             const msg = document.getElementById('successMsg');
             msg.classList.add('show');
             setTimeout(() => msg.classList.remove('show'), 2000);
         }
 
-        // 匯出所有資料
+        // ?臬?????
         function exportAllData() {
             try {
                 const alarms = localStorage.getItem('alarms');
@@ -558,40 +556,40 @@
                 URL.revokeObjectURL(url);
             } catch (e) {
                 console.error('Export error:', e);
-                alert('匯出失敗');
+                alert('?臬憭望?');
             }
         }
 
-        // 清空歷史記錄
+        // 皜征甇瑕閮?
         function clearHistory() {
-            if (confirm('確定要清空所有歷史記錄嗎？此操作不可復原。')) {
+            if (confirm('蝣箏?閬?蝛箸??風?脰???嚗迨??銝敺拙???)) {
                 try {
                     localStorage.removeItem('trackingSamples');
                     showSuccessMessage();
-                    alert('歷史記錄已清空');
+                    alert('甇瑕閮?撌脫?蝛?);
                 } catch (e) {
-                    alert('清空失敗');
+                    alert('皜征憭望?');
                 }
             }
         }
 
-        // 清空所有資料
+        // 皜征?????
         function clearAllData() {
-            if (confirm('⚠️ 這將刪除所有資料（鬧鐘、追蹤記錄、設定）。確定嗎？') && 
-                confirm('🚨 最後確認：所有資料將被永久刪除，無法復原！')) {
+            if (confirm('?? ???芷?????擛折??蕭頩方??身摰??Ⅱ摰?嚗?) && 
+                confirm('? ?敺Ⅱ隤??????鋡急偶銋?歹??⊥?敺拙?嚗?)) {
                 try {
                     localStorage.removeItem('alarms');
                     localStorage.removeItem('trackingSamples');
                     localStorage.removeItem('appSettings');
-                    alert('所有資料已清空，頁面將重新整理');
+                    alert('????歇皜征嚗??Ｗ???渡?');
                     window.location.reload();
                 } catch (e) {
-                    alert('清空失敗');
+                    alert('皜征憭望?');
                 }
             }
         }
 
-        // 初始化
+        // ????
         loadSettings();
     </script>
 </body>
