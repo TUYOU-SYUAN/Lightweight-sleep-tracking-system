@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>睡眠追蹤 - 儀表板</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-label {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .card-meta {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .stats-section h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.75rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .action-btn {
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        @media (max-width: 640px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-value {
+                font-size: 1.5rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <header class="app-header">
+            <div class="nav-container">
+                <button class="menu-toggle" id="menuToggle" aria-label="切換功能表">☰</button>
+                <h1>💤 睡眠追蹤系統</h1>
+                <nav class="nav-menu" id="navMenu">
+                    <a href="../index.html" class="nav-link">🏠 首頁</a>
+                    <a href="tracking.html" class="nav-link">📡 追蹤感測</a>
+                    <a href="monitoring.html" class="nav-link">👁️ 智能監控</a>
+                    <a href="dashboard.html" class="nav-link active">📊 儀表板</a>
+                    <a href="history.html" class="nav-link">📋 歷史</a>
+                    <a href="settings.html" class="nav-link">⚙️ 設定</a>
+                </nav>
+            </div>
+            <p class="subtitle">睡眠追蹤概覽</p>
+        </header>
+
+        <div class="content">
+            <!-- 關鍵指標 -->
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-icon">📅</div>
+                    <div class="card-label">設定的鬧鐘</div>
+                    <div class="card-value" id="totalAlarms">0</div>
+                    <div class="card-meta">已啟用</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-icon">🌙</div>
+                    <div class="card-label">這週追蹤</div>
+                    <div class="card-value" id="weeklyTracking">0</div>
+                    <div class="card-meta">次</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-icon">⏰</div>
+                    <div class="card-label">平均睡眠</div>
+                    <div class="card-value" id="avgSleep">--</div>
+                    <div class="card-meta">小時</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-icon">🎯</div>
+                    <div class="card-label">追蹤狀態</div>
+                    <div class="card-value" id="trackingStatus" style="color: #ff9800;">離線</div>
+                    <div class="card-meta">點擊應用頁啟動</div>
+                </div>
+            </div>
+
+            <!-- 統計資訊 -->
+            <div class="stats-section">
+                <h3>📊 近期統計</h3>
+                <div class="stat-item">
+                    <span class="stat-label">今日早起次數</span>
+                    <span class="stat-value" id="todayWakeups">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">這月平均睡眠時數</span>
+                    <span class="stat-value" id="monthAvgSleep">-- 小時</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">最常設定時間</span>
+                    <span class="stat-value" id="commonTime">--:--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">本週打鼾偵測</span>
+                    <span class="stat-value" id="snoreCount">0</span>
+                </div>
+            </div>
+
+            <!-- 快速操作 -->
+            <div class="quick-actions">
+                <button class="action-btn" onclick="window.location.href='../index.html'">
+                    🚀 回到應用
+                </button>
+                <button class="action-btn" onclick="window.location.href='history.html'">
+                    📋 查看歷史
+                </button>
+                <button class="action-btn" onclick="window.location.href='settings.html'">
+                    ⚙️ 設定頁面
+                </button>
+                <button class="action-btn" onclick="exportData()">
+                    💾 匯出資料
+                </button>
+            </div>
+
+            <!-- 最近的鬧鐘 -->
+            <div class="stats-section">
+                <h3>🔔 最近的鬧鐘</h3>
+                <div id="recentAlarms" style="padding: 1rem 0;">
+                    <p style="color: #999; text-align: center;">尚無鬧鐘記錄</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            <p>輕量睡眠追蹤系統 v1.0 | 儀表板</p>
+        </footer>
+    </main>
+
+    <script>
+        // 手機導航功能
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        });
+
+        // 點擊導航項目時關閉菜單
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('navMenu').classList.remove('active');
+            });
+        });
+
+        // 點擊頁面其他地方關閉菜單
+        document.addEventListener('click', function(e) {
+            const navMenu = document.getElementById('navMenu');
+            const menuToggle = document.getElementById('menuToggle');
+            if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                navMenu.classList.remove('active');
+            }
+        });
+    </script>
+
+        // 載入儀表板資料
+        function loadDashboardData() {
+            try {
+                // 載入鬧鐘
+                const alarms = JSON.parse(localStorage.getItem('alarms') || '[]');
+                document.getElementById('totalAlarms').textContent = alarms.filter(a => a.enabled !== false).length;
+
+                // 計算這週追蹤次數
+                const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+                const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+                const weeklyCount = trackingSamples.filter(s => new Date(s.createdAt).getTime() > weekAgo).length;
+                document.getElementById('weeklyTracking').textContent = weeklyCount;
+
+                // 顯示最近的鬧鐘
+                if (alarms.length > 0) {
+                    const recent = alarms.slice(0, 3).map(a => `
+                        <div class="stat-item">
+                            <span class="stat-label">${a.alarmName || '鬧鐘'}</span>
+                            <span class="stat-value">${a.wakeupTime} (${a.smartWakeupTime || '--:--'})</span>
+                        </div>
+                    `).join('');
+                    document.getElementById('recentAlarms').innerHTML = recent;
+                }
+            } catch (e) {
+                console.error('Error loading dashboard data:', e);
+            }
+        }
+
+        // 匯出資料
+        function exportData() {
+            try {
+                const alarms = localStorage.getItem('alarms');
+                const tracking = localStorage.getItem('trackingSamples');
+                const data = {
+                    alarms: JSON.parse(alarms || '[]'),
+                    trackingSamples: JSON.parse(tracking || '[]'),
+                    exportedAt: new Date().toISOString()
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sleep-tracker-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                alert('資料已匯出');
+            } catch (e) {
+                console.error('Export error:', e);
+                alert('匯出失敗');
+            }
+        }
+
+        // 初始化
+        loadDashboardData();
+    </script>
+</body>
+</html>

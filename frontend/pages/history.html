@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>睡眠追蹤 - 歷史紀錄</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .filters-section {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .filter-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group label {
+            display: block;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .filter-group input {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .filter-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-height: 44px;
+        }
+
+        .filter-btn:hover {
+            background: #764ba2;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .history-table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        .history-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .history-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .history-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .history-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .history-date {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .history-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .detail-label {
+            color: #999;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .export-section {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 44px;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        @media (max-width: 640px) {
+            .filter-group {
+                grid-template-columns: 1fr;
+            }
+
+            .history-table {
+                font-size: 0.9rem;
+            }
+
+            .history-table th,
+            .history-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <header class="app-header">
+            <div class="nav-container">
+                <button class="menu-toggle" id="menuToggle" aria-label="切換功能表">☰</button>
+                <h1>💤 睡眠追蹤系統</h1>
+                <nav class="nav-menu" id="navMenu">
+                    <a href="../index.html" class="nav-link">🏠 首頁</a>
+                    <a href="tracking.html" class="nav-link">📡 追蹤感測</a>
+                    <a href="monitoring.html" class="nav-link">👁️ 智能監控</a>
+                    <a href="dashboard.html" class="nav-link">📊 儀表板</a>
+                    <a href="history.html" class="nav-link active">📋 歷史</a>
+                    <a href="settings.html" class="nav-link">⚙️ 設定</a>
+                </nav>
+            </div>
+            <p class="subtitle">睡眠追蹤歷史記錄</p>
+        </header>
+
+        <div class="content">
+            <!-- 篩選區 -->
+            <div class="filters-section">
+                <h3>🔍 篩選</h3>
+                <div class="filter-group">
+                    <div>
+                        <label for="startDate">開始日期</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div>
+                        <label for="endDate">結束日期</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    <button class="filter-btn" onclick="applyFilters()">套用</button>
+                </div>
+            </div>
+
+            <!-- 歷史清單 -->
+            <div id="historyContainer" class="history-list">
+                <div class="empty-state">
+                    <p>📭 尚無歷史紀錄</p>
+                </div>
+            </div>
+
+            <!-- 匯出區 -->
+            <div class="export-section">
+                <button class="export-btn" onclick="exportAsCSV()">
+                    📊 匯出為 CSV
+                </button>
+                <button class="export-btn" onclick="exportAsJSON()" style="margin-left: 0.5rem;">
+                    💾 匯出為 JSON
+                </button>
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            <p>輕量睡眠追蹤系統 v1.0 | 歷史紀錄</p>
+        </footer>
+    </main>
+
+    <script>
+        // 手機導航功能
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        });
+
+        // 點擊導航項目時關閉菜單
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('navMenu').classList.remove('active');
+            });
+        });
+
+        // 點擊頁面其他地方關閉菜單
+        document.addEventListener('click', function(e) {
+            const navMenu = document.getElementById('navMenu');
+            const menuToggle = document.getElementById('menuToggle');
+            if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                navMenu.classList.remove('active');
+            }
+        });
+    </script>
+
+        // 設置日期範圍預設值
+        function initializeDateRange() {
+            const endDate = new Date();
+            const startDate = new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+            
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+        }
+
+        // 格式化日期
+        function formatDate(date) {
+            const d = new Date(date);
+            return d.toLocaleDateString('zh-TW', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit',
+                weekday: 'short'
+            });
+        }
+
+        // 計算睡眠時長
+        function calculateSleepDuration(samples) {
+            if (samples.length < 2) return '-- 小時';
+            const start = new Date(samples[0].createdAt).getTime();
+            const end = new Date(samples[samples.length - 1].createdAt).getTime();
+            const hours = (end - start) / (1000 * 60 * 60);
+            return hours.toFixed(1) + ' 小時';
+        }
+
+        // 計算平均資料
+        function calculateAverages(samples) {
+            if (samples.length === 0) return { avgMotion: '--', avgSound: '--' };
+            
+            let totalMotion = 0, totalSound = 0;
+            samples.forEach(s => {
+                totalMotion += s.motion || 0;
+                totalSound += s.sound || 0;
+            });
+            
+            return {
+                avgMotion: (totalMotion / samples.length).toFixed(2),
+                avgSound: (totalSound / samples.length).toFixed(2)
+            };
+        }
+
+        // 加載歷史紀錄
+        function loadHistory() {
+            try {
+                const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+                
+                if (trackingSamples.length === 0) {
+                    document.getElementById('historyContainer').innerHTML = `
+                        <div class="empty-state">
+                            <p>📭 尚無歷史紀錄</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 按日期分組
+                const groupedByDate = {};
+                trackingSamples.forEach(sample => {
+                    const date = new Date(sample.createdAt).toLocaleDateString('zh-TW');
+                    if (!groupedByDate[date]) {
+                        groupedByDate[date] = [];
+                    }
+                    groupedByDate[date].push(sample);
+                });
+
+                // 渲染歷史
+                const historyHtml = Object.entries(groupedByDate)
+                    .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+                    .map(([date, samples]) => {
+                        const { avgMotion, avgSound } = calculateAverages(samples);
+                        return `
+                            <div class="history-item">
+                                <div class="history-date">📅 ${date}</div>
+                                <div class="history-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">樣本數</span>
+                                        <span class="detail-value">${samples.length}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">平均運動</span>
+                                        <span class="detail-value">${avgMotion}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">平均聲音</span>
+                                        <span class="detail-value">${avgSound} dB</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">睡眠時長</span>
+                                        <span class="detail-value">${calculateSleepDuration(samples)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                document.getElementById('historyContainer').innerHTML = historyHtml || `
+                    <div class="empty-state">
+                        <p>📭 符合條件的歷史紀錄為空</p>
+                    </div>
+                `;
+            } catch (e) {
+                console.error('Error loading history:', e);
+            }
+        }
+
+        // 套用篩選
+        function applyFilters() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert('請選擇開始和結束日期');
+                return;
+            }
+
+            try {
+                const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+                const start = new Date(startDate).getTime();
+                const end = new Date(endDate).getTime() + 24 * 60 * 60 * 1000;
+
+                const filtered = trackingSamples.filter(s => {
+                    const sampleTime = new Date(s.createdAt).getTime();
+                    return sampleTime >= start && sampleTime < end;
+                });
+
+                // 按日期分組
+                const groupedByDate = {};
+                filtered.forEach(sample => {
+                    const date = new Date(sample.createdAt).toLocaleDateString('zh-TW');
+                    if (!groupedByDate[date]) {
+                        groupedByDate[date] = [];
+                    }
+                    groupedByDate[date].push(sample);
+                });
+
+                // 渲染篩選結果
+                const historyHtml = Object.entries(groupedByDate)
+                    .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+                    .map(([date, samples]) => {
+                        const { avgMotion, avgSound } = calculateAverages(samples);
+                        return `
+                            <div class="history-item">
+                                <div class="history-date">📅 ${date}</div>
+                                <div class="history-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">樣本數</span>
+                                        <span class="detail-value">${samples.length}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">平均運動</span>
+                                        <span class="detail-value">${avgMotion}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">平均聲音</span>
+                                        <span class="detail-value">${avgSound} dB</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">睡眠時長</span>
+                                        <span class="detail-value">${calculateSleepDuration(samples)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                document.getElementById('historyContainer').innerHTML = historyHtml || `
+                    <div class="empty-state">
+                        <p>📭 符合條件的歷史紀錄為空</p>
+                    </div>
+                `;
+            } catch (e) {
+                console.error('Error applying filters:', e);
+            }
+        }
+
+        // 匯出為 CSV
+        function exportAsCSV() {
+            try {
+                const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+                
+                if (trackingSamples.length === 0) {
+                    alert('沒有資料可匯出');
+                    return;
+                }
+
+                const csv = [
+                    ['日期', '時間', '運動值', '聲音值 (dB)'].join(','),
+                    ...trackingSamples.map(s => {
+                        const date = new Date(s.createdAt);
+                        return [
+                            date.toLocaleDateString('zh-TW'),
+                            date.toLocaleTimeString('zh-TW'),
+                            s.motion || '',
+                            s.sound || ''
+                        ].join(',');
+                    })
+                ].join('\n');
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `sleep-history-${Date.now()}.csv`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            } catch (e) {
+                console.error('CSV export error:', e);
+                alert('匯出失敗');
+            }
+        }
+
+        // 匯出為 JSON
+        function exportAsJSON() {
+            try {
+                const trackingSamples = localStorage.getItem('trackingSamples');
+                
+                if (!trackingSamples) {
+                    alert('沒有資料可匯出');
+                    return;
+                }
+
+                const blob = new Blob([trackingSamples], { type: 'application/json;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `sleep-history-${Date.now()}.json`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            } catch (e) {
+                console.error('JSON export error:', e);
+                alert('匯出失敗');
+            }
+        }
+
+        // 初始化
+        initializeDateRange();
+        loadHistory();
+    </script>
+</body>
+</html>

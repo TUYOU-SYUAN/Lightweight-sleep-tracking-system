@@ -8,7 +8,6 @@ class SleepTrackerApp {
         this.currentEditingAlarmId = null;
         this.alarms = [];
         this.apiAvailable = false;
-        this.trackingActive = false;
         this.init();
     }
 
@@ -214,14 +213,6 @@ class SleepTrackerApp {
             editAlarmName: document.getElementById('editAlarmName'),
             updateAlarmBtn: document.getElementById('updateAlarmBtn'),
             deleteAlarmBtn: document.getElementById('deleteAlarmBtn'),
-            startTrackingBtn: document.getElementById('startTrackingBtn'),
-            trackingStatus: document.getElementById('trackingStatus'),
-            sleepStateDisplay: document.getElementById('sleepStateDisplay'),
-            sleepStateInfo: document.getElementById('sleepStateInfo'),
-            maxDbValue: document.getElementById('maxDbValue'),
-            avgDbValue: document.getElementById('avgDbValue'),
-            snoreAlert: document.getElementById('snoreAlert'),
-            noiseAlert: document.getElementById('noiseAlert'),
         };
     }
 
@@ -264,75 +255,9 @@ class SleepTrackerApp {
             }
         });
 
-        // 開始/停止追蹤按鈕
-        if (this.elements.startTrackingBtn) {
-            this.elements.startTrackingBtn.addEventListener('click', async () => {
-                try {
-                    if (!this.trackingActive) {
-                        // 開始追蹤
-                        const onData = (payload) => {
-                            // 儲存到 localStorage（環境離線也可）
-                            try {
-                                const key = 'trackingSamples';
-                                const arr = JSON.parse(localStorage.getItem(key) || '[]');
-                                arr.push(payload);
-                                // 控制陣列長度以免無限制膨脹
-                                if (arr.length > 1000) arr.shift();
-                                localStorage.setItem(key, JSON.stringify(arr));
-                            } catch (e) {
-                                console.error('儲存追蹤資料失敗', e);
-                            }
-                            
-                            // 傳送數據給 SmartAwake 進行分析
-                            if (typeof SmartAwake !== 'undefined') {
-                                SmartAwake.processData(payload);
-                            }
-                        };
-
-                        // 設置 SmartAwake 狀態與聲音偵測回調
-                        if (typeof SmartAwake !== 'undefined') {
-                            SmartAwake.startMonitoring(
-                                (newState) => this.updateSleepStateDisplay(newState),
-                                (soundAnalysis) => this.updateSoundAnalysis(soundAnalysis)
-                            );
-                        }
-
-                        const started = await Tracker.startTracking({ sampleRate: 10, onData });
-                        if (started) {
-                            this.trackingActive = true;
-                            this.elements.startTrackingBtn.textContent = '停止追蹤';
-                            this.elements.startTrackingBtn.setAttribute('aria-pressed', 'true');
-                            if (this.elements.trackingStatus) this.elements.trackingStatus.textContent = '追蹤中';
-                            this.showNotification('追蹤已開始');
-                        } else {
-                            alert('無法啟動追蹤（可能缺少權限或裝置不支援）');
-                        }
-                    } else {
-                        // 停止追蹤
-                        await Tracker.stopTracking();
-                        if (typeof SmartAwake !== 'undefined') {
-                            SmartAwake.stopMonitoring();
-                        }
-                        this.trackingActive = false;
-                        this.elements.startTrackingBtn.textContent = '開始追蹤';
-                        this.elements.startTrackingBtn.setAttribute('aria-pressed', 'false');
-                        if (this.elements.trackingStatus) this.elements.trackingStatus.textContent = '未啟動';
-                        if (this.elements.sleepStateDisplay) this.elements.sleepStateDisplay.textContent = '未監控';
-                        this.showNotification('追蹤已停止');
-                    }
-                } catch (err) {
-                    console.error('追蹤按鈕處理錯誤', err);
-                    alert('追蹤操作發生錯誤，請查看控制台');
-                }
-            });
-        }
+        // 開始/停止追蹤按鈕已移除（現在在 tracking.html）
 
         // 喚醒按鈕已移除
-
-        // 在頁面關閉或離開時嘗試停止追蹤
-        window.addEventListener('beforeunload', () => {
-            if (this.trackingActive) Tracker.stopTracking();
-        });
 
         // 鬧鐘停止與貪睡按鈕
         const stopBtn = document.getElementById('stopAlarmBtn');
@@ -679,64 +604,21 @@ class SleepTrackerApp {
     }
 
     /**
-     * 更新睡眠狀態顯示
-     * @param {string} sleepState - 睡眠狀態
+     * 更新睡眠狀態顯示（已移除 - 現在在 monitoring.html）
+     * @deprecated
      */
     updateSleepStateDisplay(sleepState) {
-        if (!this.elements.sleepStateDisplay) return;
-
-        const stateConfig = {
-            awake: { text: '🔆 清醒', color: '#ff9800' },
-            light: { text: '💤 淺眠', color: '#667eea' },
-            deep: { text: '😴 深眠', color: '#764ba2' }
-        };
-
-        const config = stateConfig[sleepState] || { text: '未知', color: '#999' };
-        this.elements.sleepStateDisplay.textContent = config.text;
-        this.elements.sleepStateDisplay.style.color = config.color;
-
-        if (this.elements.sleepStateInfo) {
-            const info = {
-                awake: '用戶已清醒',
-                light: '用戶處於淺眠狀態',
-                deep: '用戶處於深眠狀態，避免打擾'
-            };
-            this.elements.sleepStateInfo.textContent = info[sleepState] || '狀態未知';
-        }
+        // 此功能已移除，現已移至 monitoring.html
+        return;
     }
 
     /**
-     * 更新聲音分析顯示
-     * @param {Object} soundAnalysis - { hasSnore, hasNoise, dbValues, maxDb, avgDb }
+     * 更新聲音分析顯示（已移除 - 現在在 monitoring.html）
+     * @deprecated
      */
     updateSoundAnalysis(soundAnalysis) {
-        if (!soundAnalysis) return;
-
-        // 更新分貝值顯示
-        if (this.elements.maxDbValue && soundAnalysis.maxDb !== undefined) {
-            this.elements.maxDbValue.textContent = soundAnalysis.maxDb.toFixed(1) + ' dB';
-        }
-        if (this.elements.avgDbValue && soundAnalysis.avgDb !== undefined) {
-            this.elements.avgDbValue.textContent = soundAnalysis.avgDb.toFixed(1) + ' dB';
-        }
-
-        // 更新打鼾提示
-        if (this.elements.snoreAlert) {
-            if (soundAnalysis.hasSnore) {
-                this.elements.snoreAlert.classList.remove('alert-hidden');
-            } else {
-                this.elements.snoreAlert.classList.add('alert-hidden');
-            }
-        }
-
-        // 更新噪音提示
-        if (this.elements.noiseAlert) {
-            if (soundAnalysis.hasNoise) {
-                this.elements.noiseAlert.classList.remove('alert-hidden');
-            } else {
-                this.elements.noiseAlert.classList.add('alert-hidden');
-            }
-        }
+        // 此功能已移除，現已移至 monitoring.html
+        return;
     }
 }
 

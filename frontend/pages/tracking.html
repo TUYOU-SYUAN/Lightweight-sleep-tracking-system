@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>睡眠追蹤 - 追蹤與感測</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <main class="container">
+        <header class="app-header">
+            <div class="nav-container">
+                <button class="menu-toggle" id="menuToggle" aria-label="切換功能表">☰</button>
+                <h1>💤 睡眠追蹤系統</h1>
+                <nav class="nav-menu" id="navMenu">
+                    <a href="../index.html" class="nav-link">🏠 首頁</a>
+                    <a href="tracking.html" class="nav-link active">📡 追蹤感測</a>
+                    <a href="monitoring.html" class="nav-link">👁️ 智能監控</a>
+                    <a href="dashboard.html" class="nav-link">📊 儀表板</a>
+                    <a href="history.html" class="nav-link">📋 歷史</a>
+                    <a href="settings.html" class="nav-link">⚙️ 設定</a>
+                </nav>
+            </div>
+            <p class="subtitle">運動和聲音追蹤</p>
+        </header>
+
+        <div class="content">
+            <!-- 追蹤控制區 -->
+            <section class="tracking-section">
+                <h2>🎯 追蹤控制</h2>
+                
+                <div class="tracking-info">
+                    <div class="info-item">
+                        <span class="info-label">狀態：</span>
+                        <span class="info-value" id="trackingStatus">未啟動</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">採樣數量：</span>
+                        <span class="info-value" id="sampleCount">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">運行時間：</span>
+                        <span class="info-value" id="runningTime">00:00</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" id="startTrackingBtn">▶️ 開始追蹤</button>
+                    <button class="btn btn-secondary" id="stopTrackingBtn" disabled>⏹️ 停止追蹤</button>
+                </div>
+
+                <div class="tracking-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-name">運動樣本</div>
+                        <div class="stat-value" id="motionSamples">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔊</div>
+                        <div class="stat-name">聲音樣本</div>
+                        <div class="stat-value" id="soundSamples">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-name">平均運動</div>
+                        <div class="stat-value" id="avgMotion">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📉</div>
+                        <div class="stat-name">平均聲音</div>
+                        <div class="stat-value" id="avgSound">--</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 即時監測區 -->
+            <section class="realtime-section">
+                <h2>📡 即時監測</h2>
+                
+                <div class="sensor-data">
+                    <div class="sensor-item">
+                        <h3>加速度計 (運動)</h3>
+                        <div class="sensor-reading">
+                            <div class="axis">
+                                <span class="label">X軸：</span>
+                                <span class="value" id="accelX">0.0</span>
+                                <span class="unit">m/s²</span>
+                            </div>
+                            <div class="axis">
+                                <span class="label">Y軸：</span>
+                                <span class="value" id="accelY">0.0</span>
+                                <span class="unit">m/s²</span>
+                            </div>
+                            <div class="axis">
+                                <span class="label">Z軸：</span>
+                                <span class="value" id="accelZ">0.0</span>
+                                <span class="unit">m/s²</span>
+                            </div>
+                            <div class="axis">
+                                <span class="label">合力值：</span>
+                                <span class="value" id="accelMagnitude">0.0</span>
+                                <span class="unit">m/s²</span>
+                            </div>
+                        </div>
+                        <div class="graph-placeholder" id="motionGraph">
+                            [運動波形圖]
+                        </div>
+                    </div>
+
+                    <div class="sensor-item">
+                        <h3>麥克風 (聲音)</h3>
+                        <div class="sensor-reading">
+                            <div class="axis">
+                                <span class="label">聲音級別：</span>
+                                <span class="value" id="soundLevel">0</span>
+                                <span class="unit">dB</span>
+                            </div>
+                            <div class="axis">
+                                <span class="label">RMS值：</span>
+                                <span class="value" id="rmsValue">0.0</span>
+                                <span class="unit">Pa</span>
+                            </div>
+                            <div class="axis">
+                                <span class="label">峰值：</span>
+                                <span class="value" id="peakValue">0</span>
+                                <span class="unit">dB</span>
+                            </div>
+                        </div>
+                        <div class="graph-placeholder" id="soundGraph">
+                            [聲音波形圖]
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 追蹤數據歷史 -->
+            <section class="data-history-section">
+                <h2>📋 最近追蹤數據</h2>
+                
+                <div class="data-controls">
+                    <button class="btn btn-small" onclick="clearTrackingData()">清空數據</button>
+                    <button class="btn btn-small" onclick="exportTrackingData()">匯出數據</button>
+                </div>
+
+                <div id="recentDataContainer" class="data-list">
+                    <p style="color: #999; text-align: center;">追蹤中會顯示最近數據...</p>
+                </div>
+            </section>
+        </div>
+
+        <footer class="app-footer">
+            <p>輕量睡眠追蹤系統 v1.0 | 追蹤與感測</p>
+        </footer>
+    </main>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/tracker.js"></script>
+    <script src="../js/smartAwake.js"></script>
+    <script>
+        // 手機導航功能
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('navMenu').classList.remove('active');
+            });
+        });
+
+        document.addEventListener('click', function(e) {
+            const navMenu = document.getElementById('navMenu');
+            const menuToggle = document.getElementById('menuToggle');
+            if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // 追蹤管理
+        let trackingActive = false;
+        let trackingStartTime = null;
+        let sampleBuffer = [];
+        let timerInterval = null;
+
+        const tracker = new Tracker();
+        
+        // 初始化 Tracker 回調
+        tracker.onData = function(sample) {
+            sampleBuffer.push(sample);
+            updateTrackingDisplay(sample);
+        };
+
+        document.getElementById('startTrackingBtn').addEventListener('click', () => {
+            trackingActive = true;
+            trackingStartTime = Date.now();
+            sampleBuffer = [];
+            
+            document.getElementById('startTrackingBtn').disabled = true;
+            document.getElementById('stopTrackingBtn').disabled = false;
+            document.getElementById('trackingStatus').textContent = '追蹤中...';
+            document.getElementById('trackingStatus').style.color = '#4CAF50';
+            
+            tracker.startTracking();
+            startTimer();
+        });
+
+        document.getElementById('stopTrackingBtn').addEventListener('click', () => {
+            trackingActive = false;
+            
+            document.getElementById('startTrackingBtn').disabled = false;
+            document.getElementById('stopTrackingBtn').disabled = true;
+            document.getElementById('trackingStatus').textContent = '已停止';
+            document.getElementById('trackingStatus').style.color = '#FF9800';
+            
+            tracker.stopTracking();
+            stopTimer();
+            
+            // 保存數據到 localStorage
+            const existing = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+            existing.push(...sampleBuffer);
+            localStorage.setItem('trackingSamples', JSON.stringify(existing));
+        });
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (!trackingStartTime) return;
+                
+                const elapsed = Date.now() - trackingStartTime;
+                const seconds = Math.floor(elapsed / 1000);
+                const minutes = Math.floor(seconds / 60);
+                
+                document.getElementById('runningTime').textContent = 
+                    `${String(minutes).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function updateTrackingDisplay(sample) {
+            // 更新計數
+            document.getElementById('sampleCount').textContent = sampleBuffer.length;
+            
+            // 更新加速度計
+            if (sample.motion) {
+                document.getElementById('accelX').textContent = (sample.motion.x || 0).toFixed(2);
+                document.getElementById('accelY').textContent = (sample.motion.y || 0).toFixed(2);
+                document.getElementById('accelZ').textContent = (sample.motion.z || 0).toFixed(2);
+                
+                const magnitude = Math.sqrt(
+                    (sample.motion.x || 0) ** 2 + 
+                    (sample.motion.y || 0) ** 2 + 
+                    (sample.motion.z || 0) ** 2
+                );
+                document.getElementById('accelMagnitude').textContent = magnitude.toFixed(2);
+            }
+            
+            // 更新麥克風
+            if (sample.sound !== undefined) {
+                document.getElementById('soundLevel').textContent = Math.round(sample.sound);
+                document.getElementById('rmsValue').textContent = sample.rms ? sample.rms.toFixed(4) : '0.0000';
+            }
+            
+            // 更新統計
+            updateStatistics();
+            updateRecentData();
+        }
+
+        function updateStatistics() {
+            if (sampleBuffer.length === 0) return;
+            
+            let motionCount = 0, soundCount = 0;
+            let motionSum = 0, soundSum = 0;
+            
+            sampleBuffer.forEach(s => {
+                if (s.motion) {
+                    motionCount++;
+                    motionSum += s.motion.magnitude || 0;
+                }
+                if (s.sound !== undefined) {
+                    soundCount++;
+                    soundSum += s.sound;
+                }
+            });
+            
+            document.getElementById('motionSamples').textContent = motionCount;
+            document.getElementById('soundSamples').textContent = soundCount;
+            document.getElementById('avgMotion').textContent = 
+                motionCount > 0 ? (motionSum / motionCount).toFixed(2) : '--';
+            document.getElementById('avgSound').textContent = 
+                soundCount > 0 ? Math.round(soundSum / soundCount) : '--';
+        }
+
+        function updateRecentData() {
+            if (sampleBuffer.length === 0) return;
+            
+            const recent = sampleBuffer.slice(-10).reverse();
+            const html = recent.map((s, i) => {
+                const time = new Date(s.createdAt).toLocaleTimeString('zh-TW');
+                const motion = s.motion ? s.motion.magnitude?.toFixed(2) : '--';
+                const sound = s.sound !== undefined ? Math.round(s.sound) : '--';
+                
+                return `
+                    <div class="data-item">
+                        <span class="time">${time}</span>
+                        <span class="motion">運動: ${motion}</span>
+                        <span class="sound">聲音: ${sound}dB</span>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('recentDataContainer').innerHTML = html;
+        }
+
+        function clearTrackingData() {
+            if (confirm('確定要清空當前追蹤數據嗎？')) {
+                sampleBuffer = [];
+                document.getElementById('sampleCount').textContent = '0';
+                document.getElementById('recentDataContainer').innerHTML = 
+                    '<p style="color: #999; text-align: center;">數據已清空</p>';
+            }
+        }
+
+        function exportTrackingData() {
+            if (sampleBuffer.length === 0) {
+                alert('沒有數據可匯出');
+                return;
+            }
+            
+            const csv = [
+                ['時間', '運動(X)', '運動(Y)', '運動(Z)', '運動合力', '聲音(dB)', 'RMS'].join(','),
+                ...sampleBuffer.map(s => [
+                    new Date(s.createdAt).toLocaleTimeString('zh-TW'),
+                    s.motion?.x?.toFixed(2) || '',
+                    s.motion?.y?.toFixed(2) || '',
+                    s.motion?.z?.toFixed(2) || '',
+                    s.motion?.magnitude?.toFixed(2) || '',
+                    Math.round(s.sound || 0),
+                    s.rms?.toFixed(4) || ''
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tracking-${Date.now()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
