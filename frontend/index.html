@@ -17,7 +17,6 @@
         <div class="content">
             <!-- 鬧鐘設定區域 -->
             <section class="alarm-setup-section">
-                <button class="back-btn" aria-label="返回鬧鐘設定上一層">← 返回</button>
                 <h2>設定您的鬧鐘</h2>
                 
                 <div class="form-group">
@@ -92,7 +91,6 @@
 
             <!-- 已設定的鬧鐘列表 -->
             <section class="alarms-list-section">
-                <button class="back-btn" aria-label="返回鬧鐘列表上一層">← 返回</button>
                 <h2>已設定的鬧鐘</h2>
                 <div id="alarmsList" class="alarms-list">
                     <p class="empty-message">還沒有設定任何鬧鐘</p>
@@ -101,12 +99,63 @@
 
             <!-- 追蹤與感測區域 -->
             <section class="tracking-section">
-                <button class="back-btn" aria-label="返回追蹤上一層">← 返回</button>
                 <h2>追蹤與感測</h2>
                 <p>使用手機加速度計與麥克風進行動作與聲音採樣（會要求權限）。</p>
                 <div class="tracking-controls">
                     <button class="btn btn-primary" id="startTrackingBtn" aria-pressed="false">開始追蹤</button>
                     <span id="trackingStatus" class="tracking-status">未啟動</span>
+                </div>
+            </section>
+
+            <!-- 智能喚醒區域 -->
+            <section class="smart-awake-section">
+                <h2>🧠 智能喚醒</h2>
+                <p>系統分析動作與聲音數據，推測睡眠狀態並在淺眠時溫和喚醒。</p>
+
+                <!-- 睡眠狀態指示器 -->
+                <div class="sleep-state-display">
+                    <div class="state-box">
+                        <div class="state-label">當前睡眠狀態</div>
+                        <div class="state-value" id="sleepStateDisplay">未監控</div>
+                    </div>
+                    <div class="state-info">
+                        <p id="sleepStateInfo" style="color: #666; font-size: 0.9rem;">啟動追蹤以開始分析</p>
+                    </div>
+                </div>
+
+                <!-- 聲音分析 -->
+                <div class="sound-analysis">
+                    <h3>聲音分析</h3>
+                    <div class="sound-metrics">
+                        <div class="metric">
+                            <span class="metric-label">最大分貝值</span>
+                            <span class="metric-value" id="maxDbValue">--</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">平均分貝值</span>
+                            <span class="metric-value" id="avgDbValue">--</span>
+                        </div>
+                    </div>
+                    <div class="alerts">
+                        <div id="snoreAlert" class="alert alert-hidden">
+                            <span class="alert-icon">🛏️</span>
+                            <span>偵測到打鼾</span>
+                        </div>
+                        <div id="noiseAlert" class="alert alert-hidden">
+                            <span class="alert-icon">📢</span>
+                            <span>偵測到噪音干擾</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 喚醒控制 -->
+                <div class="awaken-controls">
+                    <button class="btn btn-primary" id="awakenBtn" aria-label="溫和喚醒用戶">
+                        🔔 溫和喚醒
+                    </button>
+                    <small id="awakenStatus" style="display: block; margin-top: 0.5rem; color: #999;">
+                        淺眠或清醒時才能喚醒
+                    </small>
                 </div>
             </section>
         </div>
@@ -137,6 +186,7 @@
     <script src="js/api.js"></script>
     <script src="js/alarm.js"></script>
     <script src="js/tracker.js"></script>
+    <script src="js/smartAwake.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
