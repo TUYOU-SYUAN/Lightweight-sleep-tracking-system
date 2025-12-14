@@ -520,14 +520,29 @@
                     await tracker.stopTracking();
                     stopTimer();
 
-                    if (sampleBuffer.length > 0) {
-                        const existing = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
-                        existing.push(...sampleBuffer);
-                        if (existing.length > 1000) {
-                            existing.splice(0, existing.length - 1000);
+                    if (monitoringData.length > 0) {
+                        // 計算統計數據
+                        const stats = calculateSessionStats(monitoringData);
+                        
+                        // 創建會話記錄（包含完整統計）
+                        const sessionRecord = {
+                            startTime: new Date(trackingStartTime).toISOString(),
+                            endTime: new Date().toISOString(),
+                            duration: Date.now() - trackingStartTime,
+                            sampleCount: monitoringData.length,
+                            stats: stats,
+                            timestamp: new Date().toISOString()
+                        };
+
+                        // 保存到歷史記錄
+                        const history = JSON.parse(localStorage.getItem('sleepHistory') || '[]');
+                        history.push(sessionRecord);
+                        // 限制最多保留 100 條會話記錄
+                        if (history.length > 100) {
+                            history.splice(0, history.length - 100);
                         }
-                        localStorage.setItem('trackingSamples', JSON.stringify(existing));
-                        console.log(`已儲存 ${sampleBuffer.length} 筆追蹤數據`);
+                        localStorage.setItem('sleepHistory', JSON.stringify(history));
+                        console.log(`已儲存會話記錄：${stats.deepSleepPercent}% 深度睡眠`);
                     }
                 } catch (err) {
                     console.error('停止追蹤錯誤', err);
@@ -558,7 +573,61 @@
 
         // `sampleCount` 已移除；不再顯示或更新採樣數量
 
-        function updateMonitoringDisplay() {
+        function calculateSessionStats(data) {
+            // 計算睡眠狀態分布
+            const motionSamples = data.filter(s => s.motion);
+            if (motionSamples.length === 0) {
+                return {
+                    deepSleepPercent: 0,
+                    lightSleepPercent: 0,
+                    awakePercent: 0,
+                    sleepStability: 0,
+                    activityFreq: 0,
+                    soundAnomalies: 0,
+                    snoreCount: 0,
+                    alertCount: 0
+                };
+            }
+
+            const motionValues = motionSamples.map(s => s.motion.magnitude || 0);
+            let deepCount = 0, lightCount = 0, awakeCount = 0;
+
+            const windowSize = 10;
+            for (let i = 0; i < motionValues.length; i += windowSize) {
+                const window = motionValues.slice(i, i + windowSize);
+                const variance = calculateVariance(window);
+                
+                if (variance < 0.5) deepCount += window.length;
+                else if (variance < 2.5) lightCount += window.length;
+                else awakeCount += window.length;
+            }
+
+            const total = deepCount + lightCount + awakeCount;
+            const deepPercent = Math.round((deepCount / total) * 100);
+            const lightPercent = Math.round((lightCount / total) * 100);
+            const awakePercent = Math.round((awakeCount / total) * 100);
+
+            // 計算聲音異常和打鼾秒數
+            const soundSamples = data.filter(s => s.sound !== undefined).map(s => s.sound);
+            let snoreCount = 0, noiseCount = 0;
+            soundSamples.forEach(dbValue => {
+                if (dbValue >= 50) snoreCount++;
+                else if (dbValue >= 30) noiseCount++;
+            });
+
+            return {
+                deepSleepPercent: deepPercent,
+                lightSleepPercent: lightPercent,
+                awakePercent: awakePercent,
+                sleepStability: deepPercent,
+                activityFreq: awakePercent,
+                soundAnomalies: noiseCount,
+                snoreCount: snoreCount,
+                alertCount: alerts.length
+            };
+        }
+
+
             if (monitoringData.length === 0) {
                 document.getElementById('sleepStateDisplay').textContent = '清醒';
                 document.getElementById('sleepStateDisplay').className = 'sleep-state awake';

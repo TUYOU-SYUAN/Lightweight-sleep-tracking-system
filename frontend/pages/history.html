@@ -230,17 +230,17 @@
         // 清理超過7天的記錄
         function cleanupOldRecords() {
             try {
-                const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+                const sleepHistory = JSON.parse(localStorage.getItem('sleepHistory') || '[]');
                 const now = Date.now();
                 
-                const filtered = trackingSamples.filter(sample => {
-                    const sampleTime = new Date(sample.createdAt).getTime();
-                    return (now - sampleTime) < SEVEN_DAYS_MS;
+                const filtered = sleepHistory.filter(record => {
+                    const recordTime = new Date(record.startTime).getTime();
+                    return (now - recordTime) < SEVEN_DAYS_MS;
                 });
 
-                if (filtered.length !== trackingSamples.length) {
-                    localStorage.setItem('trackingSamples', JSON.stringify(filtered));
-                    console.log(`已清理 ${trackingSamples.length - filtered.length} 條超過7天的記錄`);
+                if (filtered.length !== sleepHistory.length) {
+                    localStorage.setItem('sleepHistory', JSON.stringify(filtered));
+                    console.log(`已清理 ${sleepHistory.length - filtered.length} 條超過7天的記錄`);
                 }
             } catch (e) {
                 console.error('清理舊記錄錯誤:', e);
@@ -287,9 +287,9 @@
                 // 先清理舊記錄
                 cleanupOldRecords();
                 
-                const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+                const sleepHistory = JSON.parse(localStorage.getItem('sleepHistory') || '[]');
                 
-                if (trackingSamples.length === 0) {
+                if (sleepHistory.length === 0) {
                     document.getElementById('historyContainer').innerHTML = `
                         <div class="empty-state">
                             <p>暫無歷史紀錄</p>
@@ -298,40 +298,54 @@
                     return;
                 }
 
-                // 按日期分組
-                const groupedByDate = {};
-                trackingSamples.forEach(sample => {
-                    const date = new Date(sample.createdAt).toLocaleDateString('zh-TW');
-                    if (!groupedByDate[date]) {
-                        groupedByDate[date] = [];
-                    }
-                    groupedByDate[date].push(sample);
-                });
+                // 生成歷史列表（按時間倒序）
+                const historyHtml = sleepHistory
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .map(record => {
+                        const startDate = new Date(record.startTime).toLocaleDateString('zh-TW');
+                        const startTime = new Date(record.startTime).toLocaleTimeString('zh-TW');
+                        const duration = (record.duration / (1000 * 60 * 60)).toFixed(1);
+                        const stats = record.stats || {};
 
-                // 生成歷史列表
-                const historyHtml = Object.entries(groupedByDate)
-                    .sort((a, b) => new Date(b[0]) - new Date(a[0]))
-                    .map(([date, samples]) => {
-                        const { avgMotion, avgSound } = calculateAverages(samples);
                         return `
                             <div class="history-item">
-                                <div class="history-date">📅 ${date}</div>
+                                <div class="history-date">📅 ${startDate} ${startTime}</div>
                                 <div class="history-details">
                                     <div class="detail-item">
-                                        <span class="detail-label">樣本數</span>
-                                        <span class="detail-value">${samples.length}</span>
+                                        <span class="detail-label">追蹤時長</span>
+                                        <span class="detail-value">${duration} 小時</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">平均運動</span>
-                                        <span class="detail-value">${avgMotion}</span>
+                                        <span class="detail-label">深度睡眠</span>
+                                        <span class="detail-value">${stats.deepSleepPercent}%</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">平均聲音</span>
-                                        <span class="detail-value">${avgSound} dB</span>
+                                        <span class="detail-label">淺度睡眠</span>
+                                        <span class="detail-value">${stats.lightSleepPercent}%</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">時長</span>
-                                        <span class="detail-value">${calculateSleepDuration(samples)}</span>
+                                        <span class="detail-label">清醒狀態</span>
+                                        <span class="detail-value">${stats.awakePercent}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">睡眠穩定性</span>
+                                        <span class="detail-value">${stats.sleepStability}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">活動頻率</span>
+                                        <span class="detail-value">${stats.activityFreq}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">聲音異常</span>
+                                        <span class="detail-value">${stats.soundAnomalies}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">打鼾次數</span>
+                                        <span class="detail-value">${stats.snoreCount}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">警報事件</span>
+                                        <span class="detail-value">${stats.alertCount}</span>
                                     </div>
                                 </div>
                             </div>
@@ -359,49 +373,63 @@
             }
 
             try {
-                const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+                const sleepHistory = JSON.parse(localStorage.getItem('sleepHistory') || '[]');
                 const start = new Date(startDate).getTime();
                 const end = new Date(endDate).getTime() + 24 * 60 * 60 * 1000;
 
-                const filtered = trackingSamples.filter(s => {
-                    const sampleTime = new Date(s.createdAt).getTime();
-                    return sampleTime >= start && sampleTime < end;
-                });
-
-                // 按日期分組
-                const groupedByDate = {};
-                filtered.forEach(sample => {
-                    const date = new Date(sample.createdAt).toLocaleDateString('zh-TW');
-                    if (!groupedByDate[date]) {
-                        groupedByDate[date] = [];
-                    }
-                    groupedByDate[date].push(sample);
+                const filtered = sleepHistory.filter(record => {
+                    const recordTime = new Date(record.startTime).getTime();
+                    return recordTime >= start && recordTime < end;
                 });
 
                 // 生成篩選後的歷史列表
-                const historyHtml = Object.entries(groupedByDate)
-                    .sort((a, b) => new Date(b[0]) - new Date(a[0]))
-                    .map(([date, samples]) => {
-                        const { avgMotion, avgSound } = calculateAverages(samples);
+                const historyHtml = filtered
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .map(record => {
+                        const startDate = new Date(record.startTime).toLocaleDateString('zh-TW');
+                        const startTime = new Date(record.startTime).toLocaleTimeString('zh-TW');
+                        const duration = (record.duration / (1000 * 60 * 60)).toFixed(1);
+                        const stats = record.stats || {};
+
                         return `
                             <div class="history-item">
-                                <div class="history-date">📅 ${date}</div>
+                                <div class="history-date">📅 ${startDate} ${startTime}</div>
                                 <div class="history-details">
                                     <div class="detail-item">
-                                        <span class="detail-label">樣本數</span>
-                                        <span class="detail-value">${samples.length}</span>
+                                        <span class="detail-label">追蹤時長</span>
+                                        <span class="detail-value">${duration} 小時</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">平均運動</span>
-                                        <span class="detail-value">${avgMotion}</span>
+                                        <span class="detail-label">深度睡眠</span>
+                                        <span class="detail-value">${stats.deepSleepPercent}%</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">平均聲音</span>
-                                        <span class="detail-value">${avgSound} dB</span>
+                                        <span class="detail-label">淺度睡眠</span>
+                                        <span class="detail-value">${stats.lightSleepPercent}%</span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">時長</span>
-                                        <span class="detail-value">${calculateSleepDuration(samples)}</span>
+                                        <span class="detail-label">清醒狀態</span>
+                                        <span class="detail-value">${stats.awakePercent}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">睡眠穩定性</span>
+                                        <span class="detail-value">${stats.sleepStability}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">活動頻率</span>
+                                        <span class="detail-value">${stats.activityFreq}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">聲音異常</span>
+                                        <span class="detail-value">${stats.soundAnomalies}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">打鼾次數</span>
+                                        <span class="detail-value">${stats.snoreCount}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">警報事件</span>
+                                        <span class="detail-value">${stats.alertCount}</span>
                                     </div>
                                 </div>
                             </div>
@@ -421,22 +449,31 @@
         // 匯出CSV
         function exportAsCSV() {
             try {
-                const trackingSamples = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+                const sleepHistory = JSON.parse(localStorage.getItem('sleepHistory') || '[]');
                 
-                if (trackingSamples.length === 0) {
+                if (sleepHistory.length === 0) {
                     alert('沒有可匯出的資料');
                     return;
                 }
 
                 const csv = [
-                    ['日期', '時間', '運動', '聲音(dB)'].join(','),
-                    ...trackingSamples.map(s => {
-                        const date = new Date(s.createdAt);
+                    ['日期', '時間', '追蹤時長(小時)', '深度睡眠(%)', '淺度睡眠(%)', '清醒狀態(%)', '睡眠穩定性(%)', '活動頻率(%)', '聲音異常', '打鼾次數', '警報事件'].join(','),
+                    ...sleepHistory.map(record => {
+                        const startDate = new Date(record.startTime);
+                        const duration = (record.duration / (1000 * 60 * 60)).toFixed(1);
+                        const stats = record.stats || {};
                         return [
-                            date.toLocaleDateString('zh-TW'),
-                            date.toLocaleTimeString('zh-TW'),
-                            s.motion || '',
-                            s.sound || ''
+                            startDate.toLocaleDateString('zh-TW'),
+                            startDate.toLocaleTimeString('zh-TW'),
+                            duration,
+                            stats.deepSleepPercent || 0,
+                            stats.lightSleepPercent || 0,
+                            stats.awakePercent || 0,
+                            stats.sleepStability || 0,
+                            stats.activityFreq || 0,
+                            stats.soundAnomalies || 0,
+                            stats.snoreCount || 0,
+                            stats.alertCount || 0
                         ].join(',');
                     })
                 ].join('\n');
@@ -456,14 +493,14 @@
         // 匯出JSON
         function exportAsJSON() {
             try {
-                const trackingSamples = localStorage.getItem('trackingSamples');
+                const sleepHistory = localStorage.getItem('sleepHistory');
                 
-                if (!trackingSamples) {
+                if (!sleepHistory) {
                     alert('沒有可匯出的資料');
                     return;
                 }
 
-                const blob = new Blob([trackingSamples], { type: 'application/json;charset=utf-8;' });
+                const blob = new Blob([sleepHistory], { type: 'application/json;charset=utf-8;' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
                 link.download = `sleep-history-${Date.now()}.json`;
