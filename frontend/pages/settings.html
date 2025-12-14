@@ -494,7 +494,7 @@
                 const settings = {
                     volume: parseInt(document.getElementById('volumeSlider').value),
                     timeFormat: document.getElementById('timeFormat').value,
-                    advanceNotify: parseInt(document.getElementById('advanceNotify').value),
+                    alarmDuration: parseInt(document.getElementById('alarmDuration').value),
                     enableNotification: document.getElementById('enableNotification').classList.contains('active'),
                     samplingRate: parseInt(document.getElementById('samplingRate').value),
                     motionSensitivity: parseInt(document.getElementById('motionSensitivity').value),
@@ -526,8 +526,8 @@
         // 時間格式
         document.getElementById('timeFormat').addEventListener('change', saveSettings);
 
-        // 提前提醒
-        document.getElementById('advanceNotify').addEventListener('change', saveSettings);
+        // 鬧鐘鈴聲時長
+        document.getElementById('alarmDuration').addEventListener('change', saveSettings);
 
         // 採樣頻率
         document.getElementById('samplingRate').addEventListener('change', saveSettings);

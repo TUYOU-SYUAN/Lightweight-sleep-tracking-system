@@ -100,6 +100,11 @@ class SleepTrackerApp {
             const ctx = new AudioCtx();
             const now = ctx.currentTime;
             
+            // 從設定讀取音量（預設 70%）
+            const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+            const volumePercent = settings.volume || 70;
+            const gainValue = (volumePercent / 100) * 0.3; // 將百分比轉換為增益值（0-0.3）
+            
             // 創建雙音調重複模式 (類似經典鬧鐘音效)
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -120,7 +125,7 @@ class SleepTrackerApp {
             
             beepPattern.forEach(beep => {
                 osc.frequency.setValueAtTime(beep.freq, now + beep.start);
-                gain.gain.setValueAtTime(0.3, now + beep.start);
+                gain.gain.setValueAtTime(gainValue, now + beep.start);
                 gain.gain.setValueAtTime(0, now + beep.start + beep.duration);
             });
             
@@ -155,10 +160,12 @@ class SleepTrackerApp {
             this.ringtoneContext = new AudioCtx();
             const now = this.ringtoneContext.currentTime;
             
-            // 從設定讀取鬧鐘鈴聲時長（預設 3 分鐘）
+            // 從設定讀取鬧鐘鈴聲時長和音量（預設 3 分鐘、70%）
             const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
             const alarmDurationMinutes = settings.alarmDuration || 3;
             const alarmDurationSeconds = alarmDurationMinutes * 60;
+            const volumePercent = settings.volume || 70;
+            const gainValue = (volumePercent / 100) * 0.25; // 將百分比轉換為增益值（0-0.25）
             
             // 創建持續的雙音調鬧鐘效果
             const osc = this.ringtoneContext.createOscillator();
@@ -179,13 +186,13 @@ class SleepTrackerApp {
                 
                 // 高音
                 osc.frequency.setValueAtTime(1000, cycleStart);
-                gain.gain.setValueAtTime(0.25, cycleStart);
+                gain.gain.setValueAtTime(gainValue, cycleStart);
                 gain.gain.setValueAtTime(0, cycleStart + beepDuration);
                 
                 // 低音
                 const secondBeep = cycleStart + beepDuration + pauseDuration;
                 osc.frequency.setValueAtTime(800, secondBeep);
-                gain.gain.setValueAtTime(0.25, secondBeep);
+                gain.gain.setValueAtTime(gainValue, secondBeep);
                 gain.gain.setValueAtTime(0, secondBeep + beepDuration);
             }
             
