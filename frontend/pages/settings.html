@@ -294,11 +294,11 @@
 
                     <div class="setting-item">
                         <div class="setting-label">
-                            <div class="setting-label-title">提前提醒</div>
-                            <div class="setting-label-desc">鬧鐘響前多久提醒</div>
+                            <div class="setting-label-title">鬧鐘鈴聲時長</div>
+                            <div class="setting-label-desc">設定鬧鐘鈴聲持續播放的時間</div>
                         </div>
                         <div class="setting-control">
-                            <input type="number" id="advanceNotify" min="0" max="30" value="5" step="1" aria-label="提前提醒分鐘數">
+                            <input type="number" id="alarmDuration" min="1" max="10" value="3" step="1" aria-label="鬧鐘鈴聲時長分鐘數">
                             <span class="unit-label">分鐘</span>
                         </div>
                     </div>
@@ -475,8 +475,8 @@
                 // 時間格式
                 document.getElementById('timeFormat').value = settings.timeFormat || '24h';
 
-                // 提前提醒
-                document.getElementById('advanceNotify').value = settings.advanceNotify || 5;
+                // 鬧鐘鈴聲時長
+                document.getElementById('alarmDuration').value = settings.alarmDuration || 3;
 
                 // 通知
                 if (settings.enableNotification !== false) {
@@ -517,7 +517,7 @@
                 const settings = {
                     volume: parseInt(document.getElementById('volumeSlider').value),
                     timeFormat: document.getElementById('timeFormat').value,
-                    advanceNotify: parseInt(document.getElementById('advanceNotify').value),
+                    alarmDuration: parseInt(document.getElementById('alarmDuration').value),
                     enableNotification: document.getElementById('enableNotification').classList.contains('active'),
                     samplingRate: parseInt(document.getElementById('samplingRate').value),
                     motionSensitivity: parseInt(document.getElementById('motionSensitivity').value),
@@ -550,8 +550,8 @@
         // 時間格式
         document.getElementById('timeFormat').addEventListener('change', saveSettings);
 
-        // 提前提醒
-        document.getElementById('advanceNotify').addEventListener('change', saveSettings);
+        // 鬧鐘鈴聲時長
+        document.getElementById('alarmDuration').addEventListener('change', saveSettings);
 
         // 採樣頻率
         document.getElementById('samplingRate').addEventListener('change', saveSettings);

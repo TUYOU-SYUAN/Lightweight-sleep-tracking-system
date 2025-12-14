@@ -155,6 +155,11 @@ class SleepTrackerApp {
             this.ringtoneContext = new AudioCtx();
             const now = this.ringtoneContext.currentTime;
             
+            // 從設定讀取鬧鐘鈴聲時長（預設 3 分鐘）
+            const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+            const alarmDurationMinutes = settings.alarmDuration || 3;
+            const alarmDurationSeconds = alarmDurationMinutes * 60;
+            
             // 創建持續的雙音調鬧鐘效果
             const osc = this.ringtoneContext.createOscillator();
             const gain = this.ringtoneContext.createGain();
@@ -167,7 +172,7 @@ class SleepTrackerApp {
             const beepDuration = 0.2; // 每個音的長度
             const pauseDuration = 0.1; // 音之間的間隔
             const cycleDuration = (beepDuration + pauseDuration) * 2; // 一個完整週期
-            const totalCycles = Math.floor(300 / cycleDuration); // 5分鐘內的週期數
+            const totalCycles = Math.floor(alarmDurationSeconds / cycleDuration); // 根據設定時長計算週期數
             
             for (let i = 0; i < totalCycles; i++) {
                 const cycleStart = now + i * cycleDuration;
@@ -188,10 +193,10 @@ class SleepTrackerApp {
             this.ringtoneOsc = osc;
             this.ringtoneGain = gain;
 
-            // 最長播放 5 分鐘
+            // 根據設定時長自動停止
             this.ringtoneTimeout = setTimeout(() => {
                 this.stopAlarmSound();
-            }, 5 * 60 * 1000);
+            }, alarmDurationSeconds * 1000);
         } catch (e) {
             console.warn('Audio API failed, fallback to beep via alert', e);
             // fallback: 持續震動（若支援）
