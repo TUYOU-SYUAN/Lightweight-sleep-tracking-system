@@ -71,6 +71,24 @@
             border-radius: 0.5rem;
             border-left: 4px solid #667eea;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .history-checkbox {
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+
+        .history-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .history-content {
+            flex: 1;
         }
 
         .history-date {
@@ -146,7 +164,7 @@
                 <button class="menu-toggle" id="menuToggle" aria-label="切換功能表">☰</button>
                 <h1>💤 睡眠追蹤系統</h1>
                 <nav class="nav-menu" id="navMenu">
-                    <a href="../index.html" class="nav-link">🏠 首頁</a>
+                    <a href="../index.html" class="nav-link">🎺 鬧鐘</a>
                     <a href="monitoring.html" class="nav-link">👁️ 智能監控</a>
                     <a href="history.html" class="nav-link active">📋 歷史</a>
                     <a href="settings.html" class="nav-link">⚙️ 設定</a>
@@ -174,6 +192,12 @@
                         <input type="date" id="endDate">
                     </div>
                     <button class="filter-btn" onclick="applyFilters()">篩選</button>
+                </div>
+                <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="selectAll()" style="padding: 0.5rem 1rem; min-height: auto;">☑️ 全選</button>
+                    <button class="btn btn-secondary" onclick="deselectAll()" style="padding: 0.5rem 1rem; min-height: auto;">☐ 取消全選</button>
+                    <button class="btn btn-danger" onclick="deleteSelected()" style="padding: 0.5rem 1rem; min-height: auto; background: #f44336;">🗑️ 刪除選中</button>
+                    <span style="color: #666; line-height: 2.2; margin-left: 0.5rem;" id="selectionCount">已選擇 0 筆</span>
                 </div>
             </div>
 
@@ -312,39 +336,44 @@
                     
                     return `
                         <div class="history-item">
-                            <div class="history-date">📅 ${dateStr} (${durationHours} 小時)</div>
-                            <div class="history-details">
-                                <div class="detail-item">
-                                    <span class="detail-label">深度睡眠</span>
-                                    <span class="detail-value">${session.deepSleepPercent}%</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">淺度睡眠</span>
-                                    <span class="detail-value">${session.lightSleepPercent}%</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">清醒狀態</span>
-                                    <span class="detail-value">${session.awakPercent}%</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">睡眠穩定性</span>
-                                    <span class="detail-value">${session.sleepStability}%</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">活動頻率</span>
-                                    <span class="detail-value">${session.activityFreq}%</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">聲音異常秒數</span>
-                                    <span class="detail-value">${session.soundAnomalies}s</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">打鼾秒數</span>
-                                    <span class="detail-value">${session.snoreCount}s</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">警報事件</span>
-                                    <span class="detail-value">${alertSummary}</span>
+                            <div class="history-checkbox">
+                                <input type="checkbox" class="session-checkbox" data-session-id="${session.sessionId}" onchange="updateSelectionCount()">
+                            </div>
+                            <div class="history-content">
+                                <div class="history-date">📅 ${dateStr} (${durationHours} 小時)</div>
+                                <div class="history-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">深度睡眠</span>
+                                        <span class="detail-value">${session.deepSleepPercent}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">淺度睡眠</span>
+                                        <span class="detail-value">${session.lightSleepPercent}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">清醒狀態</span>
+                                        <span class="detail-value">${session.awakPercent}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">睡眠穩定性</span>
+                                        <span class="detail-value">${session.sleepStability}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">活動頻率</span>
+                                        <span class="detail-value">${session.activityFreq}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">聲音異常秒數</span>
+                                        <span class="detail-value">${session.soundAnomalies}s</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">打鼾秒數</span>
+                                        <span class="detail-value">${session.snoreCount}s</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">警報事件</span>
+                                        <span class="detail-value">${alertSummary}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -356,6 +385,7 @@
                         <p>暫無符合篩選條件的記錄</p>
                     </div>
                 `;
+                updateSelectionCount();
             } catch (e) {
                 console.error('Error loading history:', e);
             }
@@ -392,12 +422,16 @@
                     
                     return `
                         <div class="history-item">
-                            <div class="history-date">📅 ${dateStr} (${durationHours} 小時)</div>
-                            <div class="history-details">
-                                <div class="detail-item">
-                                    <span class="detail-label">深度睡眠</span>
-                                    <span class="detail-value">${session.deepSleepPercent}%</span>
-                                </div>
+                            <div class="history-checkbox">
+                                <input type="checkbox" class="session-checkbox" data-session-id="${session.sessionId}" onchange="updateSelectionCount()">
+                            </div>
+                            <div class="history-content">
+                                <div class="history-date">📅 ${dateStr} (${durationHours} 小時)</div>
+                                <div class="history-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">深度睡眠</span>
+                                        <span class="detail-value">${session.deepSleepPercent}%</span>
+                                    </div>
                                 <div class="detail-item">
                                     <span class="detail-label">淺度睡眠</span>
                                     <span class="detail-value">${session.lightSleepPercent}%</span>
@@ -428,6 +462,7 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
                     `;
                 }).join('');
 
@@ -436,6 +471,7 @@
                         <p>暫無符合篩選條件的記錄</p>
                     </div>
                 `;
+                updateSelectionCount();
             } catch (e) {
                 console.error('Error applying filters:', e);
             }
@@ -444,16 +480,16 @@
         // 匯出CSV
         function exportAsCSV() {
             try {
-                const trackingSessions = JSON.parse(localStorage.getItem('trackingSessions') || '[]');
+                const selectedSessions = getSelectedSessions();
                 
-                if (trackingSessions.length === 0) {
-                    alert('沒有可匯出的資料');
+                if (selectedSessions.length === 0) {
+                    alert('請勾選要匯出的記錄');
                     return;
                 }
 
                 const csv = [
                     ['開始時間', '結束時間', '持續秒數', '樣本數', '深度睡眠%', '淺度睡眠%', '清醒%', '穩定性%', '活動頻率%', '聲音異常秒', '打鼾秒', '警報次數'].join(','),
-                    ...trackingSessions.map(s => {
+                    ...selectedSessions.map(s => {
                         const alertCount = s.alerts ? s.alerts.length : 0;
                         return [
                             new Date(s.startTime).toLocaleString('zh-TW'),
@@ -478,6 +514,7 @@
                 link.download = `sleep-history-${Date.now()}.csv`;
                 link.click();
                 URL.revokeObjectURL(link.href);
+                alert(`已匯出 ${selectedSessions.length} 筆記錄`);
             } catch (e) {
                 console.error('CSV export error:', e);
                 alert('匯出失敗');
@@ -487,22 +524,85 @@
         // 匯出JSON
         function exportAsJSON() {
             try {
-                const trackingSessions = localStorage.getItem('trackingSessions');
+                const selectedSessions = getSelectedSessions();
                 
-                if (!trackingSessions) {
-                    alert('沒有可匯出的資料');
+                if (selectedSessions.length === 0) {
+                    alert('請勾選要匯出的記錄');
                     return;
                 }
 
-                const blob = new Blob([trackingSessions], { type: 'application/json;charset=utf-8;' });
+                const blob = new Blob([JSON.stringify(selectedSessions, null, 2)], { type: 'application/json;charset=utf-8;' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
                 link.download = `sleep-history-${Date.now()}.json`;
                 link.click();
                 URL.revokeObjectURL(link.href);
+                alert(`已匯出 ${selectedSessions.length} 筆記錄`);
             } catch (e) {
                 console.error('JSON export error:', e);
                 alert('匯出失敗');
+            }
+        }
+
+        // 取得被勾選的會話
+        function getSelectedSessions() {
+            const checkboxes = document.querySelectorAll('.session-checkbox:checked');
+            const sessionIds = Array.from(checkboxes).map(cb => parseInt(cb.dataset.sessionId));
+            const trackingSessions = JSON.parse(localStorage.getItem('trackingSessions') || '[]');
+            return trackingSessions.filter(s => sessionIds.includes(s.sessionId));
+        }
+
+        // 更新選擇計數
+        function updateSelectionCount() {
+            const checkboxes = document.querySelectorAll('.session-checkbox');
+            const checkedCount = document.querySelectorAll('.session-checkbox:checked').length;
+            const countEl = document.getElementById('selectionCount');
+            if (countEl) {
+                countEl.textContent = `已選擇 ${checkedCount} 筆`;
+            }
+        }
+
+        // 全選
+        function selectAll() {
+            document.querySelectorAll('.session-checkbox').forEach(cb => cb.checked = true);
+            updateSelectionCount();
+        }
+
+        // 取消全選
+        function deselectAll() {
+            document.querySelectorAll('.session-checkbox').forEach(cb => cb.checked = false);
+            updateSelectionCount();
+        }
+
+        // 刪除選中記錄
+        function deleteSelected() {
+            const checkboxes = document.querySelectorAll('.session-checkbox:checked');
+            
+            if (checkboxes.length === 0) {
+                alert('請勾選要刪除的記錄');
+                return;
+            }
+
+            if (!confirm(`確定要刪除 ${checkboxes.length} 筆記錄嗎？此操作無法恢復。`)) {
+                return;
+            }
+
+            try {
+                const sessionIdsToDelete = Array.from(checkboxes).map(cb => parseInt(cb.dataset.sessionId));
+                const trackingSessions = JSON.parse(localStorage.getItem('trackingSessions') || '[]');
+                
+                // 過濾掉被選中的記錄
+                const remainingSessions = trackingSessions.filter(s => !sessionIdsToDelete.includes(s.sessionId));
+                
+                localStorage.setItem('trackingSessions', JSON.stringify(remainingSessions));
+                
+                alert(`已成功刪除 ${checkboxes.length} 筆記錄`);
+                
+                // 重新載入歷史
+                loadHistory();
+            } catch (e) {
+                console.error('刪除記錄錯誤:', e);
+                alert('刪除失敗，請再試一次');
             }
         }
 
