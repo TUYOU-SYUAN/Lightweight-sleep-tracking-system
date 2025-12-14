@@ -381,6 +381,18 @@
     <script src="../js/tracker.js"></script>
     <!-- smartAwake.js 已移除 -->
     <script>
+        // 頁面加載時應用深色模式設定
+        (function() {
+            try {
+                const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+                if (settings.darkMode) {
+                    document.body.classList.add('dark-mode');
+                }
+            } catch (e) {
+                console.error('加載深色模式設定錯誤:', e);
+            }
+        })();
+
         // 手機導航功能
         document.getElementById('menuToggle').addEventListener('click', function() {
             const navMenu = document.getElementById('navMenu');

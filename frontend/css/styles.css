@@ -502,6 +502,22 @@ input[type="text"]:focus {
     margin-top: 2rem;
     opacity: 0.8;
     font-size: 0.875rem;
+    background: transparent;
+}
+
+/* ===================================
+   深色模式樣式
+   =================================== */
+body.dark-mode {
+    background: #1a1a1a;
+    color: #e0e0e0;
+}
+
+body.dark-mode .app-footer {
+    background: #000000;
+    color: #ffffff;
+    margin-top: 2rem;
+    opacity: 1;
 }
 
 /* ===================================
