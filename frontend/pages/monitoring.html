@@ -242,7 +242,7 @@
                 <button class="menu-toggle" id="menuToggle" aria-label="切換功能表">☰</button>
                 <h1>💤 睡眠追蹤系統</h1>
                 <nav class="nav-menu" id="navMenu">
-                    <a href="../index.html" class="nav-link">🏠 鬧鐘</a>
+                    <a href="../index.html" class="nav-link">🎺 鬧鐘</a>
                     <a href="monitoring.html" class="nav-link active">👁️ 智能監控</a>
                     <a href="history.html" class="nav-link">📋 歷史</a>
                     <a href="settings.html" class="nav-link">⚙️ 設定</a>
@@ -307,14 +307,14 @@
 
             <!-- 警報檢測 -->
             <div class="alert-section">
-                <h3>🚨 警報事件</h3>
-                <div class="alert-list" id="alertList">
-                    <div class="empty-alert">
-                        <p>無警報事件記錄</p>
-                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">啟動追蹤後會開始檢測</p>
+                <h3>🚨 警報事件統計</h3>
+                <div class="stats-grid" style="margin-top: 1rem;">
+                    <div class="stat-box">
+                        <div class="stat-label">🔔 警報總次數</div>
+                        <div class="stat-value" id="totalAlertCount">0</div>
                     </div>
                 </div>
-                <button class="btn btn-secondary" onclick="clearAlerts()" style="margin-top: 1rem; width: 100%;">清空警報記錄</button>
+                <button class="btn btn-secondary" onclick="clearAlerts()" style="margin-top: 1rem; width: 100%;">重置計數</button>
             </div>
 
             <!-- 睡眠品質分析 -->
@@ -410,6 +410,7 @@
         let pendingAlerts = [];
         let alertFlushInterval = null;
         let monitoringData = [];
+        let totalAlertCount = 0;
 
         const tracker = Tracker; // Tracker 已在全域定義為物件
 
@@ -445,16 +446,10 @@
                     monitoringData = [];
                     alerts = [];
                     pendingAlerts = [];
-                    // 清空警報列表 UI
-                    const alertListEl = document.getElementById('alertList');
-                    if (alertListEl) {
-                        alertListEl.innerHTML = `
-                            <div class="empty-alert">
-                                <p>無警報事件記錄</p>
-                                <p style="font-size: 0.85rem; margin-top: 0.5rem;">啟動追蹤後會開始檢測</p>
-                            </div>
-                        `;
-                    }
+                    totalAlertCount = 0;
+                    // 重置警報計數顯示
+                    const setIf2 = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+                    setIf2('totalAlertCount', '0');
                     // 重設顯示數值
                     const setIf = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
                     setIf('snoreCount', '0');
@@ -843,66 +838,27 @@
         function flushPendingAlerts() {
             if (!pendingAlerts || pendingAlerts.length === 0) return;
 
-            const alertList = document.getElementById('alertList');
-            // 移除空訊息提示（如存在）
-            const emptyNode = alertList.querySelector('.empty-alert');
-            if (emptyNode) emptyNode.remove();
-
-            // 按類型分組顯示（每種類型生成一個可展開項目）
-            const groups = pendingAlerts.reduce((acc, a) => {
-                acc[a.type] = acc[a.type] || [];
-                acc[a.type].push(a);
-                return acc;
-            }, {});
-
-            Object.keys(groups).forEach(type => {
-                const group = groups[type];
-                const count = group.length;
-                const firstTs = group[0].timestamp;
-                let itemsHtml = '';
-                group.forEach(it => {
-                    itemsHtml += `<div style="padding:0.25rem 0; border-bottom: 1px solid #eee;"><div>${it.message}</div><div class="alert-time">${it.timestamp}</div></div>`;
-                });
-
-                const title = type === 'snore' ? '🎺 打鼾檢測' : '🔊 噪音檢測';
-                const summary = `${title} — ${count} 次（${firstTs} 起）`;
-
-                const detailsHtml = `
-                    <details class="alert-item ${type}">
-                        <summary style="cursor: pointer; padding:0.5rem 0;"><strong>${summary}</strong></summary>
-                        <div class="alert-content" style="padding:0.5rem 0;">${itemsHtml}</div>
-                    </details>
-                `;
-
-                alertList.insertAdjacentHTML('afterbegin', detailsHtml);
-                // 保持最多 20 條紀錄
-                while (alertList.children.length > 20) {
-                    alertList.removeChild(alertList.lastChild);
-                }
-            });
+            // 計算總警報數（已經透過 addAlert 的重複檢查機制去重）
+            totalAlertCount += pendingAlerts.length;
+            document.getElementById('totalAlertCount').textContent = totalAlertCount;
 
             // 清空待發送緩衝
             pendingAlerts = [];
         }
 
         function clearAlerts() {
-            if (confirm('確定要清空所有警報記錄嗎？')) {
+            if (confirm('確定要重置所有警報計數嗎？')) {
                 alerts = [];
                 pendingAlerts = [];
-                const alertList = document.getElementById('alertList');
-                alertList.innerHTML = `
-                    <div class="empty-alert">
-                        <p>無警報事件記錄</p>
-                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">啟動追蹤後會開始檢測</p>
-                    </div>
-                `;
+                totalAlertCount = 0;
+                document.getElementById('totalAlertCount').textContent = '0';
             }
         }
 
-        // 啟動每分鐘刷新（如果尚未啟動）
+        // 啟動每五秒刷新（如果尚未啟動）
         if (!alertFlushInterval) {
-            // 立即在 60 秒後開始第一次 flush
-            alertFlushInterval = setInterval(flushPendingAlerts, 60 * 1000);
+            // 立即在 5 秒後開始第一次 flush
+            alertFlushInterval = setInterval(flushPendingAlerts, 5 * 1000);
         }
 
         // 初始化 - 加載現有數據
