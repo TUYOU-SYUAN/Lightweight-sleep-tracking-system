@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>輕量睡眠追蹤系統 - Sleep Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <main class="container">
+        <header class="app-header">
+            <h1>💤 睡眠追蹤系統</h1>
+            <p class="subtitle">智能鬧鐘設定</p>
+        </header>
+
+        <div class="content">
+            <!-- 鬧鐘設定區域 -->
+            <section class="alarm-setup-section">
+                <h2>設定您的鬧鐘</h2>
+                
+                <div class="form-group">
+                    <label for="wakeupTime">最晚喚醒時間：</label>
+                    <input 
+                        type="time" 
+                        id="wakeupTime" 
+                        name="wakeupTime"
+                        aria-label="設定最晚喚醒時間"
+                        required
+                    >
+                </div>
+
+                <div class="smart-wake-section">
+                    <h3>智能喚醒建議</h3>
+                    <div class="wake-info">
+                        <p>系統將自動建議提前 30 分鐘的智能喚醒時間</p>
+                        <div class="suggested-time">
+                            <span class="label">建議喚醒時間：</span>
+                            <span id="suggestedTime" class="time-display">--:--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="alarmName">鬧鐘名稱（選填）：</label>
+                    <input 
+                        type="text" 
+                        id="alarmName" 
+                        name="alarmName"
+                        placeholder="例如：週一工作"
+                        aria-label="輸入鬧鐘名稱"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="alarmDays">重複設定：</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="days" value="monday" class="day-checkbox">
+                            <span>週一</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="days" value="tuesday" class="day-checkbox">
+                            <span>週二</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="days" value="wednesday" class="day-checkbox">
+                            <span>週三</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="days" value="thursday" class="day-checkbox">
+                            <span>週四</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="days" value="friday" class="day-checkbox">
+                            <span>週五</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="days" value="saturday" class="day-checkbox">
+                            <span>週六</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="days" value="sunday" class="day-checkbox">
+                            <span>週日</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="saveAlarmBtn">保存鬧鐘</button>
+            </section>
+
+            <!-- 已設定的鬧鐘列表 -->
+            <section class="alarms-list-section">
+                <h2>已設定的鬧鐘</h2>
+                <div id="alarmsList" class="alarms-list">
+                    <p class="empty-message">還沒有設定任何鬧鐘</p>
+                </div>
+            </section>
+        </div>
+
+        <footer class="app-footer">
+            <p>輕量睡眠追蹤系統 v1.0</p>
+        </footer>
+    </main>
+
+    <!-- 模態視窗：編輯鬧鐘 -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>編輯鬧鐘</h2>
+            <div class="form-group">
+                <label for="editWakeupTime">喚醒時間：</label>
+                <input type="time" id="editWakeupTime" aria-label="編輯喚醒時間">
+            </div>
+            <div class="form-group">
+                <label for="editAlarmName">鬧鐘名稱：</label>
+                <input type="text" id="editAlarmName" placeholder="例如：週一工作">
+            </div>
+            <button class="btn btn-primary" id="updateAlarmBtn">更新鬧鐘</button>
+            <button class="btn btn-secondary" id="deleteAlarmBtn">刪除鬧鐘</button>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/alarm.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

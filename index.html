@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>輕量睡眠追蹤系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        a {
+            display: inline-block;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-weight: 600;
+        }
+
+        a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .features {
+            background: #f8f9ff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .features h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .features li {
+            padding: 0.5rem 0;
+            color: #666;
+        }
+
+        .features li:before {
+            content: "✅ ";
+            margin-right: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            color: #999;
+            margin-top: 2rem;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💤 輕量睡眠追蹤系統</h1>
+        
+        <p>歡迎！這是一個簡單高效的睡眠追蹤應用，具有智能鬧鐘功能。</p>
+
+        <div class="features">
+            <h2>🎯 核心功能</h2>
+            <ul>
+                <li>設定最晚喚醒時間</li>
+                <li>自動計算 30 分鐘智能喚醒時間</li>
+                <li>每周重複設定</li>
+                <li>本地存儲和雲端同步</li>
+                <li>響應式設計，支援多設備</li>
+            </ul>
+        </div>
+
+        <div class="links">
+            <a href="frontend/index.html">🚀 啟動應用</a>
+            <a href="QUICKSTART.md">📖 快速開始</a>
+            <a href="README.md">📚 完整文檔</a>
+            <a href="DEVELOPMENT.md">🔧 開發指南</a>
+        </div>
+
+        <div style="background: #fffacd; padding: 1rem; border-radius: 0.5rem; margin: 1.5rem 0;">
+            <strong>📌 首次使用？</strong>
+            <p style="margin-top: 0.5rem;">點擊「啟動應用」開始。應用會自動保存您的鬧鐘設定到本地存儲。</p>
+        </div>
+
+        <div style="background: #f0f8ff; padding: 1rem; border-radius: 0.5rem; margin: 1.5rem 0;">
+            <strong>💻 開發者？</strong>
+            <p style="margin-top: 0.5rem;">查看 DEVELOPMENT.md 了解如何設置完整的後端和資料庫。</p>
+        </div>
+
+        <footer>
+            <p>輕量睡眠追蹤系統 v1.0 | 使用 HTML5, CSS3, JavaScript, PHP, MySQL 構建</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{
+  "name": "sleep-tracker",
+  "version": "1.0.0",
+  "description": "輕量睡眠追蹤系統 - 智能鬧鐘應用",
+  "author": "Sleep Tracker Team",
+  "license": "MIT",
+  "keywords": [
+    "sleep",
+    "tracking",
+    "alarm",
+    "smart-wake",
+    "health"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/sleep-tracker.git"
+  },
+  "engines": {
+    "php": "^7.4",
+    "mysql": "^8.0"
+  },
+  "frontend": {
+    "type": "vanilla",
+    "technologies": [
+      "HTML5",
+      "CSS3",
+      "JavaScript ES6+"
+    ],
+    "optional": [
+      "React.js",
+      "Vue.js",
+      "React Native"
+    ]
+  },
+  "backend": {
+    "type": "RESTful API",
+    "language": "PHP",
+    "database": "MySQL",
+    "optional": [
+      "Firebase Realtime Database"
+    ]
+  },
+  "scripts": {
+    "start:frontend": "python -m http.server 8080 -d frontend",
+    "start:backend": "php -S localhost:8000 -t backend",
+    "dev": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
