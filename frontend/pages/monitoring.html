@@ -330,11 +330,11 @@
                         <div class="stat-value" id="activityFreq">--%</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-label">聲音異常</div>
+                        <div class="stat-label">聲音異常秒數</div>
                         <div class="stat-value" id="soundAnomalies">0</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-label">打鼾次數</div>
+                        <div class="stat-label">打鼾秒數</div>
                         <div class="stat-value" id="snoreCount">0</div>
                     </div>
                 </div>
@@ -697,9 +697,9 @@
             // 打鼾偵測：25 dB 以上
             // 聲音異常偵測：15 dB 以上且低於 25 dB
             soundSamples.forEach(dbValue => {
-                if (dbValue >= 25) {
+                if (dbValue >= 50) {
                     snoreCount++;
-                } else if (dbValue >= 15) {
+                } else if (dbValue >= 30) {
                     noiseCount++;
                 }
             });
