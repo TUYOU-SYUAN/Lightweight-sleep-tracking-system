@@ -372,24 +372,6 @@
                     </div>
                 </section>
 
-                <!-- 主題設定 -->
-                <section class="settings-section">
-                    <div class="section-header">
-                        <span class="section-icon">🎨</span>
-                        <h2 class="section-title">主題設定</h2>
-                    </div>
-
-                    <div class="setting-item">
-                        <div class="setting-label">
-                            <div class="setting-label-title">深色模式</div>
-                            <div class="setting-label-desc">啟用深色主題</div>
-                        </div>
-                        <div class="setting-control">
-                            <button class="toggle-switch" id="darkMode" aria-label="深色模式"></button>
-                        </div>
-                    </div>
-                </section>
-
                 <!-- 資料管理 -->
                 <section class="settings-section">
                     <div class="section-header">
@@ -500,12 +482,6 @@
                 if (settings.autoTracking) {
                     document.getElementById('autoTracking').classList.add('active');
                 }
-
-                // 深色模式
-                if (settings.darkMode) {
-                    document.getElementById('darkMode').classList.add('active');
-                    document.body.classList.add('dark-mode');
-                }
             } catch (e) {
                 console.error('加載設定錯誤:', e);
             }
@@ -517,13 +493,12 @@
                 const settings = {
                     volume: parseInt(document.getElementById('volumeSlider').value),
                     timeFormat: document.getElementById('timeFormat').value,
-                    alarmDuration: parseInt(document.getElementById('alarmDuration').value),
+                    advanceNotify: parseInt(document.getElementById('advanceNotify').value),
                     enableNotification: document.getElementById('enableNotification').classList.contains('active'),
                     samplingRate: parseInt(document.getElementById('samplingRate').value),
                     motionSensitivity: parseInt(document.getElementById('motionSensitivity').value),
                     soundSensitivity: parseInt(document.getElementById('soundSensitivity').value),
-                    autoTracking: document.getElementById('autoTracking').classList.contains('active'),
-                    darkMode: document.getElementById('darkMode').classList.contains('active')
+                    autoTracking: document.getElementById('autoTracking').classList.contains('active')
                 };
 
                 localStorage.setItem('appSettings', JSON.stringify(settings));
@@ -550,8 +525,8 @@
         // 時間格式
         document.getElementById('timeFormat').addEventListener('change', saveSettings);
 
-        // 鬧鐘鈴聲時長
-        document.getElementById('alarmDuration').addEventListener('change', saveSettings);
+        // 提前提醒
+        document.getElementById('advanceNotify').addEventListener('change', saveSettings);
 
         // 採樣頻率
         document.getElementById('samplingRate').addEventListener('change', saveSettings);
@@ -592,12 +567,6 @@
             saveSettings();
         });
 
-        // 切換深色模式
-        document.getElementById('darkMode').addEventListener('click', function() {
-            this.classList.toggle('active');
-            document.body.classList.toggle('dark-mode');
-            saveSettings();
-        });
 
         // 匯出所有資料
         function exportAllData() {
