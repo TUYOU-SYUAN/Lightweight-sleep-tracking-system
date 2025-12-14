@@ -86,6 +86,66 @@ class SleepTrackerApp {
     }
 
     /**
+     * 測試鈴聲（播放短暫測試音）
+     */
+    testRingtone() {
+        if (this.testingRingtone) {
+            this.showNotification('測試鈴聲播放中...');
+            return;
+        }
+
+        try {
+            this.testingRingtone = true;
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioCtx();
+            const now = ctx.currentTime;
+            
+            // 創建雙音調重複模式 (類似經典鬧鐘音效)
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.type = 'square'; // 方波音色更響亮
+            gain.connect(ctx.destination);
+            osc.connect(gain);
+            
+            // 雙音調模式: 高音(1000Hz) -> 低音(800Hz) -> 重複
+            const beepPattern = [
+                { freq: 1000, start: 0, duration: 0.15 },
+                { freq: 800, start: 0.15, duration: 0.15 },
+                { freq: 1000, start: 0.4, duration: 0.15 },
+                { freq: 800, start: 0.55, duration: 0.15 },
+                { freq: 1000, start: 0.8, duration: 0.15 },
+                { freq: 800, start: 0.95, duration: 0.15 }
+            ];
+            
+            beepPattern.forEach(beep => {
+                osc.frequency.setValueAtTime(beep.freq, now + beep.start);
+                gain.gain.setValueAtTime(0.3, now + beep.start);
+                gain.gain.setValueAtTime(0, now + beep.start + beep.duration);
+            });
+            
+            osc.start(now);
+            osc.stop(now + 1.2);
+            
+            this.showNotification('✅ 測試鈴聲播放成功！', 2000);
+            
+            setTimeout(() => {
+                try { ctx.close(); } catch (e) {}
+                this.testingRingtone = false;
+            }, 1300);
+        } catch (e) {
+            console.warn('測試鈴聲失敗:', e);
+            this.showNotification('❌ 音訊播放失敗，請檢查瀏覽器權限', 3000);
+            this.testingRingtone = false;
+            
+            // fallback: 震動
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200]);
+            }
+        }
+    }
+
+    /**
      * 播放鈴聲（使用 Web Audio API 生成漸進音調）
      */
     playRingtone() {
@@ -94,20 +154,41 @@ class SleepTrackerApp {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
             this.ringtoneContext = new AudioCtx();
             const now = this.ringtoneContext.currentTime;
+            
+            // 創建持續的雙音調鬧鐘效果
             const osc = this.ringtoneContext.createOscillator();
             const gain = this.ringtoneContext.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(440, now);
-            osc.frequency.linearRampToValueAtTime(880, now + 2);
-            gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.2, now + 0.1);
+            
+            osc.type = 'square'; // 方波音色
             osc.connect(gain);
             gain.connect(this.ringtoneContext.destination);
+            
+            // 持續重複的雙音調模式
+            const beepDuration = 0.2; // 每個音的長度
+            const pauseDuration = 0.1; // 音之間的間隔
+            const cycleDuration = (beepDuration + pauseDuration) * 2; // 一個完整週期
+            const totalCycles = Math.floor(300 / cycleDuration); // 5分鐘內的週期數
+            
+            for (let i = 0; i < totalCycles; i++) {
+                const cycleStart = now + i * cycleDuration;
+                
+                // 高音
+                osc.frequency.setValueAtTime(1000, cycleStart);
+                gain.gain.setValueAtTime(0.25, cycleStart);
+                gain.gain.setValueAtTime(0, cycleStart + beepDuration);
+                
+                // 低音
+                const secondBeep = cycleStart + beepDuration + pauseDuration;
+                osc.frequency.setValueAtTime(800, secondBeep);
+                gain.gain.setValueAtTime(0.25, secondBeep);
+                gain.gain.setValueAtTime(0, secondBeep + beepDuration);
+            }
+            
             osc.start(now);
             this.ringtoneOsc = osc;
             this.ringtoneGain = gain;
 
-            // 持續播放直到 stopRingtone 被呼叫；但設一個最大時間保護（5 分鐘）
+            // 最長播放 5 分鐘
             this.ringtoneTimeout = setTimeout(() => {
                 this.stopAlarmSound();
             }, 5 * 60 * 1000);
@@ -165,6 +246,16 @@ class SleepTrackerApp {
             const newMM = String(d.getMinutes()).padStart(2,'0');
             this.activeAlarm.wakeupTime = `${newHH}:${newMM}`;
 
+            // 更新記憶體內的鬧鐘資料並持久化（本地）
+            const idx = this.alarms.findIndex(a => a.id === this.activeAlarm.id);
+            if (idx > -1) {
+                this.alarms[idx].wakeupTime = this.activeAlarm.wakeupTime;
+                try { API.saveLocalAlarm(this.alarms[idx]); } catch (e) { /* 忽略本地保存錯誤 */ }
+            }
+
+            // 允許當天再次觸發（解除已觸發標記）
+            try { this.triggeredToday.delete(this.activeAlarm.id); } catch (e) {}
+
             // 解除當前播放
             this.stopAlarmSound();
             this.showNotification('已設定貪睡 5 分鐘');
@@ -201,6 +292,7 @@ class SleepTrackerApp {
             alarmNameInput: document.getElementById('alarmName'),
             dayCheckboxes: document.querySelectorAll('.day-checkbox'),
             saveAlarmBtn: document.getElementById('saveAlarmBtn'),
+            testRingtoneBtn: document.getElementById('testRingtoneBtn'),
             alarmsList: document.getElementById('alarmsList'),
             editModal: document.getElementById('editModal'),
             closeBtn: document.querySelector('.close-btn'),
@@ -219,6 +311,11 @@ class SleepTrackerApp {
 
         // 保存鬧鐘按鈕
         this.elements.saveAlarmBtn.addEventListener('click', () => this.saveAlarm());
+
+        // 測試鈴聲按鈕
+        if (this.elements.testRingtoneBtn) {
+            this.elements.testRingtoneBtn.addEventListener('click', () => this.testRingtone());
+        }
 
         // 模態視窗關閉按鈕
         this.elements.closeBtn.addEventListener('click', () => this.closeModal());
