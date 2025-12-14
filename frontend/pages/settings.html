@@ -1,11 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?∠?餈質馱 - 閮剖?</title>
+    <title>睡眠追蹤系統 - 設定</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
+        .settings-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
         .settings-section {
             background: white;
             border-radius: 0.75rem;
@@ -14,11 +19,23 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
-        .settings-section h3 {
-            color: #667eea;
+        .section-header {
+            display: flex;
+            align-items: center;
             margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
             border-bottom: 2px solid #667eea;
-            padding-bottom: 0.75rem;
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+        }
+
+        .section-title {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.1rem;
         }
 
         .setting-item {
@@ -50,20 +67,38 @@
 
         .setting-control {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.75rem;
             align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         input[type="range"] {
-            width: 150px;
+            width: 120px;
         }
 
         input[type="number"] {
-            width: 80px;
-            padding: 0.5rem;
+            width: 70px;
+            padding: 0.4rem 0.5rem;
             border: 1px solid #ddd;
             border-radius: 0.25rem;
-            font-size: 1rem;
+            font-size: 0.9rem;
+        }
+
+        select {
+            padding: 0.4rem 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            background: white;
+        }
+
+        .range-value {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
         }
 
         .toggle-switch {
@@ -75,6 +110,9 @@
             border-radius: 14px;
             cursor: pointer;
             transition: background 0.3s;
+            border: none;
+            padding: 0;
+            flex-shrink: 0;
         }
 
         .toggle-switch.active {
@@ -97,83 +135,112 @@
             left: 24px;
         }
 
-        .select-control {
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 0.25rem;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        .danger-zone {
-            background: #fff5f5;
-            border-left: 4px solid #ff4444;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-
-        .danger-btn {
-            background: #ff4444;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            min-height: 44px;
-            margin-top: 0.5rem;
-        }
-
-        .danger-btn:hover {
-            background: #cc0000;
-        }
-
-        .range-value {
-            min-width: 50px;
-            text-align: right;
-            font-weight: 600;
-            color: #667eea;
+        .unit-label {
+            font-size: 0.9rem;
+            color: #666;
+            min-width: 30px;
         }
 
         .success-message {
-            background: #f0f9ff;
-            border-left: 4px solid #667eea;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin: 1rem 0;
             display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
         }
 
         .success-message.show {
             display: block;
-            animation: slideDown 0.3s ease;
         }
 
-        @keyframes slideDown {
+        @keyframes slideIn {
             from {
+                transform: translateX(400px);
                 opacity: 0;
-                transform: translateY(-10px);
             }
             to {
+                transform: translateX(0);
                 opacity: 1;
-                transform: translateY(0);
             }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            min-width: 140px;
+            padding: 0.7rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-export {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #764ba2;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        .settings-note {
+            background: #f5f5f5;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 1.5rem;
         }
 
         @media (max-width: 640px) {
-            .setting-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
+            .settings-container {
+                padding: 0 1rem;
             }
 
             .setting-control {
                 width: 100%;
+                justify-content: flex-start;
+                margin-top: 0.5rem;
+            }
+
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             input[type="range"] {
+                width: 100%;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons button {
                 width: 100%;
             }
         }
@@ -183,210 +250,210 @@
     <main class="container">
         <header class="app-header">
             <div class="nav-container">
-                <button class="menu-toggle" id="menuToggle" aria-label="???銵?>??/button>
-                <h1>? ?∠?餈質馱蝟餌絞</h1>
+                <button class="menu-toggle" id="menuToggle" aria-label="切換功能表">☰</button>
+                <h1>💤 睡眠追蹤系統</h1>
                 <nav class="nav-menu" id="navMenu">
-                    <a href="../index.html" class="nav-link">?? 擐?</a>
-                    <a href="monitoring.html" class="nav-link">智能監控</a>
-                    <a href="history.html" class="nav-link">歷史</a>
-                    <a href="settings.html" class="nav-link active">設定</a>
+                    <a href="../index.html" class="nav-link">🏠 首頁</a>
+                    <a href="monitoring.html" class="nav-link">👁️ 智能監控</a>
+                    <a href="history.html" class="nav-link">📋 歷史</a>
+                    <a href="settings.html" class="nav-link active">⚙️ 設定</a>
                 </nav>
             </div>
-            <p class="subtitle">蝞∠??蝔?閮剖?</p>
+            <p class="subtitle">自訂應用程式設定和偏好設定</p>
         </header>
 
         <div class="content">
-            <div class="success-message" id="successMsg">
-                ??閮剖?撌脖?摮?
-            </div>
+            <div class="settings-container">
+                <!-- 通知設定 -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-icon">🔔</span>
+                        <h2 class="section-title">通知設定</h2>
+                    </div>
 
-            <!-- 擛折?閮剖? -->
-            <div class="settings-section">
-                <h3>?? 擛折?閮剖?</h3>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <div class="setting-label-title">啟用通知</div>
+                            <div class="setting-label-desc">接收鬧鐘和警報通知</div>
+                        </div>
+                        <div class="setting-control">
+                            <button class="toggle-switch active" id="enableNotification" aria-label="啟用通知"></button>
+                        </div>
+                    </div>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">?渲?喲?</div>
-                        <div class="setting-label-desc">隤踵擛折??渲?喲?</div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <div class="setting-label-title">鈴聲音量</div>
+                            <div class="setting-label-desc">調整鬧鐘鈴聲大小</div>
+                        </div>
+                        <div class="setting-control">
+                            <input type="range" id="volumeSlider" min="0" max="100" value="70" step="10" aria-label="音量調整">
+                            <span class="range-value" id="volumeValue">70%</span>
+                        </div>
                     </div>
-                    <div class="setting-control">
-                        <input type="range" id="volumeSlider" min="0" max="100" value="70" step="10">
-                        <span class="range-value" id="volumeValue">70%</span>
-                    </div>
-                </div>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">???澆?</div>
-                        <div class="setting-label-desc">12 撠???24 撠???/div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <div class="setting-label-title">提前提醒</div>
+                            <div class="setting-label-desc">鬧鐘響前多久提醒</div>
+                        </div>
+                        <div class="setting-control">
+                            <input type="number" id="advanceNotify" min="0" max="30" value="5" step="1" aria-label="提前提醒分鐘數">
+                            <span class="unit-label">分鐘</span>
+                        </div>
                     </div>
-                    <div class="setting-control">
-                        <select class="select-control" id="timeFormat">
-                            <option value="24h">24 撠???/option>
-                            <option value="12h">12 撠???/option>
-                        </select>
-                    </div>
-                </div>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">擛折?????/div>
-                        <div class="setting-label-desc">??憭????</div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <div class="setting-label-title">時間格式</div>
+                            <div class="setting-label-desc">選擇 12 或 24 小時制</div>
+                        </div>
+                        <div class="setting-control">
+                            <select id="timeFormat" aria-label="時間格式">
+                                <option value="24h">24 小時制</option>
+                                <option value="12h">12 小時制</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="setting-control">
-                        <input type="number" id="advanceNotify" min="0" max="30" value="5" step="1">
-                        <span>??</span>
-                    </div>
-                </div>
+                </section>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">?擛折??</div>
-                        <div class="setting-label-desc">?交擛折??</div>
+                <!-- 追蹤設定 -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-icon">📊</span>
+                        <h2 class="section-title">追蹤設定</h2>
                     </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch active" id="enableNotification" onclick="toggleNotification(this)"></div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- 餈質馱閮剖? -->
-            <div class="settings-section">
-                <h3>?? 餈質馱閮剖?</h3>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <div class="setting-label-title">採樣頻率</div>
+                            <div class="setting-label-desc">感測器資料採樣速率</div>
+                        </div>
+                        <div class="setting-control">
+                            <select id="samplingRate" aria-label="採樣頻率">
+                                <option value="5">5 Hz</option>
+                                <option value="10" selected>10 Hz</option>
+                                <option value="15">15 Hz</option>
+                                <option value="20">20 Hz</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">?見?餌?</div>
-                        <div class="setting-label-desc">瘥??⊥見甈⊥ (Hz)</div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <div class="setting-label-title">運動敏感度</div>
+                            <div class="setting-label-desc">加速度計靈敏度調整</div>
+                        </div>
+                        <div class="setting-control">
+                            <input type="range" id="motionSensitivity" min="1" max="10" value="5" step="1" aria-label="運動敏感度">
+                            <span class="range-value" id="motionValue">普通</span>
+                        </div>
                     </div>
-                    <div class="setting-control">
-                        <select class="select-control" id="samplingRate">
-                            <option value="5">5 Hz</option>
-                            <option value="10" selected>10 Hz</option>
-                            <option value="15">15 Hz</option>
-                            <option value="20">20 Hz</option>
-                        </select>
-                    </div>
-                </div>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">????摨?/div>
-                        <div class="setting-label-desc">瑼Ｘ葫??霈????漲</div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <div class="setting-label-title">聲音敏感度</div>
+                            <div class="setting-label-desc">麥克風靈敏度調整</div>
+                        </div>
+                        <div class="setting-control">
+                            <input type="range" id="soundSensitivity" min="1" max="10" value="5" step="1" aria-label="聲音敏感度">
+                            <span class="range-value" id="soundValue">普通</span>
+                        </div>
                     </div>
-                    <div class="setting-control">
-                        <input type="range" id="motionSensitivity" min="1" max="10" value="5" step="1">
-                        <span class="range-value" id="motionValue">銝剔?</span>
-                    </div>
-                </div>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">?脤??摨?/div>
-                        <div class="setting-label-desc">瑼Ｘ葫?脤霈????漲</div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <div class="setting-label-title">自動追蹤</div>
+                            <div class="setting-label-desc">應用啟動時自動開始追蹤</div>
+                        </div>
+                        <div class="setting-control">
+                            <button class="toggle-switch" id="autoTracking" aria-label="自動追蹤"></button>
+                        </div>
                     </div>
-                    <div class="setting-control">
-                        <input type="range" id="soundSensitivity" min="1" max="10" value="5" step="1">
-                        <span class="range-value" id="soundValue">銝剔?</span>
-                    </div>
-                </div>
+                </section>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">??芸?餈質馱</div>
-                        <div class="setting-label-desc">??????憪蕭頩?/div>
+                <!-- 主題設定 -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-icon">🎨</span>
+                        <h2 class="section-title">主題設定</h2>
                     </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch" id="autoTracking" onclick="toggleAutoTracking(this)"></div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- 銝駁?閮剖? -->
-            <div class="settings-section">
-                <h3>? 銝駁?閮剖?</h3>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <div class="setting-label-title">深色模式</div>
+                            <div class="setting-label-desc">啟用深色主題</div>
+                        </div>
+                        <div class="setting-control">
+                            <button class="toggle-switch" id="darkMode" aria-label="深色模式"></button>
+                        </div>
+                    </div>
+                </section>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">瘛梯璅∪?</div>
-                        <div class="setting-label-desc">?瘛梯銝駁?</div>
+                <!-- 資料管理 -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-icon">💾</span>
+                        <h2 class="section-title">資料管理</h2>
                     </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch" id="darkMode" onclick="toggleDarkMode(this)"></div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- 鞈?蝞∠? -->
-            <div class="settings-section">
-                <h3>? 鞈?蝞∠?</h3>
+                    <p class="settings-note">
+                        💡 管理您的應用資料。可以匯出備份或清除特定類型的資料。
+                    </p>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">?臬?????/div>
-                        <div class="setting-label-desc">撠??洹??餈質馱鞈??臬</div>
+                    <div class="action-buttons">
+                        <button class="btn-export" onclick="exportAllData()" title="將所有資料匯出為 JSON">
+                            📥 匯出所有資料
+                        </button>
+                        <button class="btn-export" onclick="exportSettings()" title="僅匯出設定">
+                            ⚙️ 匯出設定
+                        </button>
                     </div>
-                    <div class="setting-control">
-                        <button onclick="exportAllData()" style="
-                            background: #667eea;
-                            color: white;
-                            padding: 0.5rem 1rem;
-                            border: none;
-                            border-radius: 0.25rem;
-                            cursor: pointer;
-                            min-height: 44px;
-                            font-weight: 600;
-                        ">?臬</button>
-                    </div>
-                </div>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <div class="setting-label-title">皜征??風?脰???/div>
-                        <div class="setting-label-desc">?芷??蕭頩斗見?祈???/div>
+                    <div class="setting-item" style="border-top: 1px solid #f0f0f0; margin-top: 1rem; padding-top: 1rem;">
+                        <div class="setting-label">
+                            <div class="setting-label-title">清除歷史記錄</div>
+                            <div class="setting-label-desc">刪除所有追蹤資料</div>
+                        </div>
                     </div>
-                    <div class="setting-control">
-                        <button onclick="clearHistory()" style="
-                            background: #ff9800;
-                            color: white;
-                            padding: 0.5rem 1rem;
-                            border: none;
-                            border-radius: 0.25rem;
-                            cursor: pointer;
-                            min-height: 44px;
-                            font-weight: 600;
-                        ">皜征</button>
-                    </div>
-                </div>
 
-                <div class="danger-zone">
-                    <strong style="color: #cc0000;">?? ?梢?</strong>
-                    <div class="setting-label-desc">銝敺拙???雿?/div>
-                    <button class="danger-btn" onclick="clearAllData()">皜征?????/button>
-                </div>
+                    <div class="action-buttons">
+                        <button class="btn-danger" onclick="clearHistory()" title="刪除所有追蹤記錄">
+                            🗑️ 清除歷史
+                        </button>
+                        <button class="btn-danger" onclick="clearAllData()" title="刪除所有應用資料（不可恢復）">
+                            ⚠️ 清除所有資料
+                        </button>
+                    </div>
+                </section>
+
+                <div style="height: 2rem;"></div>
             </div>
         </div>
 
         <footer class="app-footer">
-            <p>頛??∠?餈質馱蝟餌絞 v1.0 | 閮剖?</p>
+            <p>輕量睡眠追蹤系統 v1.0 | 設定</p>
         </footer>
     </main>
 
+    <!-- 成功訊息 -->
+    <div class="success-message" id="successMsg">
+        ✅ 設定已儲存
+    </div>
+
     <script>
-        // ??撠?
+        // 手機導航功能
         document.getElementById('menuToggle').addEventListener('click', function() {
             const navMenu = document.getElementById('navMenu');
             navMenu.classList.toggle('active');
         });
 
-        // 暺?撠???????
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function() {
                 document.getElementById('navMenu').classList.remove('active');
             });
         });
 
-        // 暺???嗡??唳???
         document.addEventListener('click', function(e) {
             const navMenu = document.getElementById('navMenu');
             const menuToggle = document.getElementById('menuToggle');
@@ -394,58 +461,57 @@
                 navMenu.classList.remove('active');
             }
         });
-    </script>
 
-        // 頛閮剖?
+        // 加載設定
         function loadSettings() {
             try {
                 const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
 
-                // ?喲?
+                // 音量
                 const volume = settings.volume || 70;
                 document.getElementById('volumeSlider').value = volume;
                 document.getElementById('volumeValue').textContent = volume + '%';
 
-                // ???澆?
+                // 時間格式
                 document.getElementById('timeFormat').value = settings.timeFormat || '24h';
 
-                // ???
+                // 提前提醒
                 document.getElementById('advanceNotify').value = settings.advanceNotify || 5;
 
-                // ??
+                // 通知
                 if (settings.enableNotification !== false) {
                     document.getElementById('enableNotification').classList.add('active');
                 }
 
-                // ?見?餌?
+                // 採樣頻率
                 document.getElementById('samplingRate').value = settings.samplingRate || 10;
 
-                // ????摨?
+                // 運動敏感度
                 const motionSens = settings.motionSensitivity || 5;
                 document.getElementById('motionSensitivity').value = motionSens;
                 updateMotionLabel(motionSens);
 
-                // ?脤??摨?
+                // 聲音敏感度
                 const soundSens = settings.soundSensitivity || 5;
                 document.getElementById('soundSensitivity').value = soundSens;
                 updateSoundLabel(soundSens);
 
-                // ?芸?餈質馱
+                // 自動追蹤
                 if (settings.autoTracking) {
                     document.getElementById('autoTracking').classList.add('active');
                 }
 
-                // 瘛梯璅∪?
+                // 深色模式
                 if (settings.darkMode) {
                     document.getElementById('darkMode').classList.add('active');
                     document.body.classList.add('dark-mode');
                 }
             } catch (e) {
-                console.error('Error loading settings:', e);
+                console.error('加載設定錯誤:', e);
             }
         }
 
-        // ?脣?閮剖?
+        // 保存設定
         function saveSettings() {
             try {
                 const settings = {
@@ -463,77 +529,77 @@
                 localStorage.setItem('appSettings', JSON.stringify(settings));
                 showSuccessMessage();
             } catch (e) {
-                console.error('Error saving settings:', e);
-                alert('?脣?憭望?');
+                console.error('保存設定錯誤:', e);
+                alert('保存失敗');
             }
         }
 
-        // ?喲?皛?
-        document.getElementById('volumeSlider').addEventListener('input', (e) => {
-            document.getElementById('volumeValue').textContent = e.target.value + '%';
-            saveSettings();
-        });
-
-        // ???澆?
-        document.getElementById('timeFormat').addEventListener('change', saveSettings);
-
-        // ???
-        document.getElementById('advanceNotify').addEventListener('change', saveSettings);
-
-        // ?見?餌?
-        document.getElementById('samplingRate').addEventListener('change', saveSettings);
-
-        // ????摨?
-        document.getElementById('motionSensitivity').addEventListener('input', (e) => {
-            updateMotionLabel(e.target.value);
-            saveSettings();
-        });
-
-        // ?脤??摨?
-        document.getElementById('soundSensitivity').addEventListener('input', (e) => {
-            updateSoundLabel(e.target.value);
-            saveSettings();
-        });
-
-        // ?湔????摨行?蝐?
-        function updateMotionLabel(value) {
-            const labels = ['', '?虜雿?, '雿?, '頛?', '雿葉', '銝剔?', '銝剝?', '頛?', '擃?, '?虜擃?, '璆菟?'];
-            document.getElementById('motionValue').textContent = labels[value] || '銝剔?';
-        }
-
-        // ?湔?脤??摨行?蝐?
-        function updateSoundLabel(value) {
-            const labels = ['', '?虜雿?, '雿?, '頛?', '雿葉', '銝剔?', '銝剝?', '頛?', '擃?, '?虜擃?, '璆菟?'];
-            document.getElementById('soundValue').textContent = labels[value] || '銝剔?';
-        }
-
-        // ???
-        function toggleNotification(el) {
-            el.classList.toggle('active');
-            saveSettings();
-        }
-
-        // ???芸?餈質馱
-        function toggleAutoTracking(el) {
-            el.classList.toggle('active');
-            saveSettings();
-        }
-
-        // ??瘛梯璅∪?
-        function toggleDarkMode(el) {
-            el.classList.toggle('active');
-            document.body.classList.toggle('dark-mode');
-            saveSettings();
-        }
-
-        // 憿舐內??閮
+        // 顯示成功訊息
         function showSuccessMessage() {
             const msg = document.getElementById('successMsg');
             msg.classList.add('show');
             setTimeout(() => msg.classList.remove('show'), 2000);
         }
 
-        // ?臬?????
+        // 音量滑塊
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            document.getElementById('volumeValue').textContent = e.target.value + '%';
+            saveSettings();
+        });
+
+        // 時間格式
+        document.getElementById('timeFormat').addEventListener('change', saveSettings);
+
+        // 提前提醒
+        document.getElementById('advanceNotify').addEventListener('change', saveSettings);
+
+        // 採樣頻率
+        document.getElementById('samplingRate').addEventListener('change', saveSettings);
+
+        // 運動敏感度
+        document.getElementById('motionSensitivity').addEventListener('input', (e) => {
+            updateMotionLabel(e.target.value);
+            saveSettings();
+        });
+
+        // 聲音敏感度
+        document.getElementById('soundSensitivity').addEventListener('input', (e) => {
+            updateSoundLabel(e.target.value);
+            saveSettings();
+        });
+
+        // 更新運動敏感度標籤
+        function updateMotionLabel(value) {
+            const labels = ['', '非常低', '很低', '低', '偏低', '普通', '偏高', '高', '很高', '非常高', '極端'];
+            document.getElementById('motionValue').textContent = labels[value] || '普通';
+        }
+
+        // 更新聲音敏感度標籤
+        function updateSoundLabel(value) {
+            const labels = ['', '非常低', '很低', '低', '偏低', '普通', '偏高', '高', '很高', '非常高', '極端'];
+            document.getElementById('soundValue').textContent = labels[value] || '普通';
+        }
+
+        // 切換通知
+        document.getElementById('enableNotification').addEventListener('click', function() {
+            this.classList.toggle('active');
+            saveSettings();
+        });
+
+        // 切換自動追蹤
+        document.getElementById('autoTracking').addEventListener('click', function() {
+            this.classList.toggle('active');
+            saveSettings();
+        });
+
+        // 切換深色模式
+        document.getElementById('darkMode').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.body.classList.toggle('dark-mode');
+            saveSettings();
+        });
+
+        // 匯出所有資料
         function exportAllData() {
             try {
                 const alarms = localStorage.getItem('alarms');
@@ -554,42 +620,67 @@
                 a.download = `sleep-tracker-backup-${Date.now()}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
+                showSuccessMessage();
             } catch (e) {
-                console.error('Export error:', e);
-                alert('?臬憭望?');
+                console.error('匯出錯誤:', e);
+                alert('匯出失敗');
             }
         }
 
-        // 皜征甇瑕閮?
+        // 匯出設定
+        function exportSettings() {
+            try {
+                const settings = localStorage.getItem('appSettings') || '{}';
+                const data = {
+                    appSettings: JSON.parse(settings),
+                    exportedAt: new Date().toISOString()
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sleep-tracker-settings-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showSuccessMessage();
+            } catch (e) {
+                console.error('匯出設定錯誤:', e);
+                alert('匯出失敗');
+            }
+        }
+
+        // 清除歷史記錄
         function clearHistory() {
-            if (confirm('蝣箏?閬?蝛箸??風?脰???嚗迨??銝敺拙???)) {
+            if (confirm('確定要刪除所有追蹤記錄嗎？此操作無法恢復。')) {
                 try {
                     localStorage.removeItem('trackingSamples');
                     showSuccessMessage();
-                    alert('甇瑕閮?撌脫?蝛?);
+                    alert('追蹤記錄已清除');
                 } catch (e) {
-                    alert('皜征憭望?');
+                    alert('清除失敗');
                 }
             }
         }
 
-        // 皜征?????
+        // 清除所有資料
         function clearAllData() {
-            if (confirm('?? ???芷?????擛折??蕭頩方??身摰??Ⅱ摰?嚗?) && 
-                confirm('? ?敺Ⅱ隤??????鋡急偶銋?歹??⊥?敺拙?嚗?)) {
-                try {
-                    localStorage.removeItem('alarms');
-                    localStorage.removeItem('trackingSamples');
-                    localStorage.removeItem('appSettings');
-                    alert('????歇皜征嚗??Ｗ???渡?');
-                    window.location.reload();
-                } catch (e) {
-                    alert('皜征憭望?');
+            if (confirm('確定要刪除所有應用資料嗎？（包含鬧鐘、追蹤和設定）')) {
+                if (confirm('這是不可恢復的操作。請再次確認。')) {
+                    try {
+                        localStorage.removeItem('alarms');
+                        localStorage.removeItem('trackingSamples');
+                        localStorage.removeItem('appSettings');
+                        alert('所有資料已清除，頁面將重新加載');
+                        window.location.reload();
+                    } catch (e) {
+                        alert('清除失敗');
+                    }
                 }
             }
         }
 
-        // ????
+        // 初始化
         loadSettings();
     </script>
 </body>

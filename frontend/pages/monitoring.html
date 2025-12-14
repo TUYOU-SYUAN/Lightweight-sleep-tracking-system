@@ -579,6 +579,8 @@
             // 計算統計信息
             calculateStatistics();
             updateRealTimeData();
+            updateSoundAnalysis();
+            updateTrendChart();
         }
 
         function calculateVariance(values) {
@@ -658,6 +660,105 @@
                 const avgSound = soundSamples.reduce((a, b) => a + b) / soundSamples.length;
                 document.getElementById('avgSoundMonitor').textContent = Math.round(avgSound) + ' dB';
             }
+        }
+
+        function updateSoundAnalysis() {
+            const soundSamples = monitoringData.filter(s => s.sound !== undefined).map(s => s.sound);
+            if (soundSamples.length === 0) return;
+
+            let snoreCount = 0;
+            let noiseCount = 0;
+
+            // 打鼾偵測：25 dB 以上
+            // 聲音異常偵測：15 dB 以上且低於 25 dB
+            soundSamples.forEach(dbValue => {
+                if (dbValue >= 25) {
+                    snoreCount++;
+                } else if (dbValue >= 15) {
+                    noiseCount++;
+                }
+            });
+
+            // 計算百分比或異常次數
+            document.getElementById('snoreCount').textContent = snoreCount;
+            document.getElementById('soundAnomalies').textContent = noiseCount;
+
+            // 觸發警報（最近 10 個樣本中檢測）
+            const recentSounds = soundSamples.slice(-10);
+            recentSounds.forEach((dbValue, idx) => {
+                if (dbValue >= 25 && !alerts.some(a => 
+                    a.type === 'snore' && 
+                    new Date() - new Date(a.timestamp) < 5000
+                )) {
+                    addAlert('snore', `檢測到打鼾信號: ${Math.round(dbValue)} dB`);
+                } else if (dbValue >= 15 && dbValue < 25 && !alerts.some(a => 
+                    a.type === 'noise' && 
+                    new Date() - new Date(a.timestamp) < 5000
+                )) {
+                    addAlert('noise', `檢測到聲音異常: ${Math.round(dbValue)} dB`);
+                }
+            });
+        }
+
+        function updateTrendChart() {
+            const canvas = document.getElementById('trendChart');
+            if (!canvas) return;
+
+            if (monitoringData.length < 5) {
+                canvas.innerHTML = '[狀態變化趨勢圖表 - 需要更多數據]';
+                return;
+            }
+
+            // 簡化趨勢圖：使用 ASCII 或簡單視覺表示
+            const motionValues = monitoringData
+                .filter(s => s.motion)
+                .map(s => s.motion.magnitude || 0);
+
+            if (motionValues.length === 0) return;
+
+            // 分組運動幅度為狀態
+            const groupSize = Math.max(1, Math.floor(motionValues.length / 20));
+            const stateSequence = [];
+            const timepoints = [];
+
+            for (let i = 0; i < motionValues.length; i += groupSize) {
+                const group = motionValues.slice(i, i + groupSize);
+                const variance = calculateVariance(group);
+                
+                if (variance < 0.5) {
+                    stateSequence.push('深眠');
+                } else if (variance < 2.5) {
+                    stateSequence.push('淺眠');
+                } else {
+                    stateSequence.push('清醒');
+                }
+                timepoints.push(Math.round(i / 10) + 's');
+            }
+
+            // 生成簡單視覺表示
+            let html = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            html += '<div style="display: flex; align-items: center; height: 30px; overflow-x: auto;">';
+            
+            stateSequence.forEach((state, idx) => {
+                let color = '#4CAF50'; // 深眠
+                let text = '🟢';
+                if (state === '淺眠') {
+                    color = '#667eea';
+                    text = '🟡';
+                } else if (state === '清醒') {
+                    color = '#ff9800';
+                    text = '🔴';
+                }
+                html += `<span style="margin: 0 2px; font-size: 1.2rem;">${text}</span>`;
+            });
+
+            html += '</div>';
+            html += '<div style="font-size: 0.85rem; color: #999;">';
+            html += '<span>🟢=深眠 🟡=淺眠 🔴=清醒</span>';
+            html += '</div>';
+            html += '</div>';
+
+            canvas.innerHTML = html;
         }
 
         function addAlert(type, message) {
