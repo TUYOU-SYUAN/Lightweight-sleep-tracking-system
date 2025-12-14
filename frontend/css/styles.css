@@ -66,6 +66,7 @@ section {
     margin-bottom: 2rem;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     animation: fadeIn 0.6s ease-out;
+    position: relative; /* 使 section 內的絕對定位按鈕（back-btn）生效 */
 }
 
 section h2 {
@@ -259,6 +260,36 @@ input[type="text"]:focus {
 
 .btn-edit:hover {
     background: #5a6fcf;
+}
+
+/* 返回按鈕樣式（每個區塊左上角） */
+.back-btn {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    background: rgba(255,255,255,0.95);
+    color: #333;
+    border: 1px solid #e0e0e0;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+    z-index: 10;
+}
+
+.back-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Header 全域返回按鈕：相對於 .app-header 的位置 */
+.app-header { position: relative; }
+.app-header .back-btn {
+    left: 1rem;
+    top: 1rem;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.12);
 }
 
 /* ===================================

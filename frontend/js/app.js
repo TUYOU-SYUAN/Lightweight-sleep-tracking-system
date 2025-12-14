@@ -8,6 +8,7 @@ class SleepTrackerApp {
         this.currentEditingAlarmId = null;
         this.alarms = [];
         this.apiAvailable = false;
+        this.trackingActive = false;
         this.init();
     }
 
@@ -42,6 +43,8 @@ class SleepTrackerApp {
             editAlarmName: document.getElementById('editAlarmName'),
             updateAlarmBtn: document.getElementById('updateAlarmBtn'),
             deleteAlarmBtn: document.getElementById('deleteAlarmBtn'),
+            startTrackingBtn: document.getElementById('startTrackingBtn'),
+            trackingStatus: document.getElementById('trackingStatus'),
         };
     }
 
@@ -83,6 +86,85 @@ class SleepTrackerApp {
                 this.closeModal();
             }
         });
+
+        // 開始/停止追蹤按鈕
+        if (this.elements.startTrackingBtn) {
+            this.elements.startTrackingBtn.addEventListener('click', async () => {
+                try {
+                    if (!this.trackingActive) {
+                        // 開始追蹤
+                        const onData = (payload) => {
+                            // 儲存到 localStorage（環境離線也可）
+                            try {
+                                const key = 'trackingSamples';
+                                const arr = JSON.parse(localStorage.getItem(key) || '[]');
+                                arr.push(payload);
+                                // 控制陣列長度以免無限制膨脹
+                                if (arr.length > 1000) arr.shift();
+                                localStorage.setItem(key, JSON.stringify(arr));
+                            } catch (e) {
+                                console.error('儲存追蹤資料失敗', e);
+                            }
+                            // 也可在此處做即時分析或發送到後端
+                        };
+
+                        const started = await Tracker.startTracking({ sampleRate: 10, onData });
+                        if (started) {
+                            this.trackingActive = true;
+                            this.elements.startTrackingBtn.textContent = '停止追蹤';
+                            this.elements.startTrackingBtn.setAttribute('aria-pressed', 'true');
+                            if (this.elements.trackingStatus) this.elements.trackingStatus.textContent = '追蹤中';
+                            this.showNotification('追蹤已開始');
+                        } else {
+                            alert('無法啟動追蹤（可能缺少權限或裝置不支援）');
+                        }
+                    } else {
+                        // 停止追蹤
+                        await Tracker.stopTracking();
+                        this.trackingActive = false;
+                        this.elements.startTrackingBtn.textContent = '開始追蹤';
+                        this.elements.startTrackingBtn.setAttribute('aria-pressed', 'false');
+                        if (this.elements.trackingStatus) this.elements.trackingStatus.textContent = '未啟動';
+                        this.showNotification('追蹤已停止');
+                    }
+                } catch (err) {
+                    console.error('追蹤按鈕處理錯誤', err);
+                    alert('追蹤操作發生錯誤，請查看控制台');
+                }
+            });
+        }
+
+        // 在頁面關閉或離開時嘗試停止追蹤
+        window.addEventListener('beforeunload', () => {
+            if (this.trackingActive) Tracker.stopTracking();
+        });
+
+        // 全域與區塊返回按鈕（事件代理）
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest && e.target.closest('.back-btn');
+            if (btn) {
+                e.preventDefault();
+                this.goBack();
+            }
+        });
+    }
+
+    /**
+     * 處理返回行為：嘗試 history.back()，若無效果則以滾動回頂部替代
+     */
+    goBack() {
+        try {
+            if (window.history && window.history.length > 1) {
+                window.history.back();
+                return;
+            }
+        } catch (e) {
+            console.warn('history.back failed', e);
+        }
+
+        // fallback: scroll to top of page and show notification
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.showNotification('已返回');
     }
 
     /**

@@ -9,6 +9,7 @@
 <body>
     <main class="container">
         <header class="app-header">
+            <button class="back-btn" id="globalBackBtn" aria-label="返回上一頁">← 返回</button>
             <h1>💤 睡眠追蹤系統</h1>
             <p class="subtitle">智能鬧鐘設定</p>
         </header>
@@ -16,6 +17,7 @@
         <div class="content">
             <!-- 鬧鐘設定區域 -->
             <section class="alarm-setup-section">
+                <button class="back-btn" aria-label="返回鬧鐘設定上一層">← 返回</button>
                 <h2>設定您的鬧鐘</h2>
                 
                 <div class="form-group">
@@ -90,9 +92,21 @@
 
             <!-- 已設定的鬧鐘列表 -->
             <section class="alarms-list-section">
+                <button class="back-btn" aria-label="返回鬧鐘列表上一層">← 返回</button>
                 <h2>已設定的鬧鐘</h2>
                 <div id="alarmsList" class="alarms-list">
                     <p class="empty-message">還沒有設定任何鬧鐘</p>
+                </div>
+            </section>
+
+            <!-- 追蹤與感測區域 -->
+            <section class="tracking-section">
+                <button class="back-btn" aria-label="返回追蹤上一層">← 返回</button>
+                <h2>追蹤與感測</h2>
+                <p>使用手機加速度計與麥克風進行動作與聲音採樣（會要求權限）。</p>
+                <div class="tracking-controls">
+                    <button class="btn btn-primary" id="startTrackingBtn" aria-pressed="false">開始追蹤</button>
+                    <span id="trackingStatus" class="tracking-status">未啟動</span>
                 </div>
             </section>
         </div>
@@ -122,6 +136,7 @@
 
     <script src="js/api.js"></script>
     <script src="js/alarm.js"></script>
+    <script src="js/tracker.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
