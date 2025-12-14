@@ -272,8 +272,7 @@
                 </div>
 
                 <div class="button-group">
-                    <button class="btn btn-primary" id="startTrackingBtn">▶️ 開始追蹤</button>
-                    <button class="btn btn-secondary" id="stopTrackingBtn" disabled>⏹️ 停止追蹤</button>
+                    <button class="btn btn-primary" id="toggleTrackingBtn" aria-pressed="false">▶️ 開始追蹤</button>
                 </div>
             </section>
 
@@ -414,97 +413,107 @@
         let sampleBuffer = [];
         let timerInterval = null;
         let alerts = [];
+        let pendingAlerts = [];
+        let alertFlushInterval = null;
         let monitoringData = [];
 
-        const tracker = new Tracker();
+        const tracker = Tracker; // Tracker 已在全域定義為物件
 
-        document.getElementById('startTrackingBtn').addEventListener('click', async () => {
-            try {
-                trackingActive = true;
-                trackingStartTime = Date.now();
-                sampleBuffer = [];
-                
-                document.getElementById('startTrackingBtn').disabled = true;
-                document.getElementById('stopTrackingBtn').disabled = false;
-                document.getElementById('trackingStatus').textContent = '追蹤中...';
-                document.getElementById('trackingStatus').style.color = '#4CAF50';
-                
-                // 啟動追蹤並設置回調
-                const started = await tracker.startTracking({
-                    sampleRate: 10,
-                    onData: (sample) => {
-                        // 計算聲音的分貝值（需要從 RMS 轉換）
-                        if (sample.audio) {
-                            // RMS to dB: dB = 20 * log10(RMS / 20e-6)
-                            const rms = sample.audio.rms || 0;
-                            const dbValue = rms > 0 ? 20 * Math.log10(rms / 20e-6) : -Infinity;
-                            sample.sound = isFinite(dbValue) ? dbValue : 0;
-                            sample.rms = rms;
+        function setTrackingUI(active) {
+            const btn = document.getElementById('toggleTrackingBtn');
+            const statusEl = document.getElementById('trackingStatus');
+            if (active) {
+                btn.textContent = '⏹️ 停止追蹤';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+                btn.setAttribute('aria-pressed', 'true');
+                statusEl.textContent = '追蹤中...';
+                statusEl.style.color = '#4CAF50';
+            } else {
+                btn.textContent = '▶️ 開始追蹤';
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+                btn.setAttribute('aria-pressed', 'false');
+                statusEl.textContent = active === null ? '錯誤' : (active ? '追蹤中...' : '已停止');
+                statusEl.style.color = active ? '#4CAF50' : '#FF9800';
+            }
+        }
+
+        document.getElementById('toggleTrackingBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('toggleTrackingBtn');
+            // 如果目前沒有追蹤，啟動；否則停止
+            if (!trackingActive) {
+                try {
+                    trackingActive = true;
+                    trackingStartTime = Date.now();
+                    sampleBuffer = [];
+                    setTrackingUI(true);
+
+                    const started = await tracker.startTracking({
+                        sampleRate: 10,
+                        onData: (sample) => {
+                            if (sample.audio) {
+                                const rms = sample.audio.rms || 0;
+                                const dbValue = rms > 0 ? 20 * Math.log10(rms / 20e-6) : -Infinity;
+                                sample.sound = isFinite(dbValue) ? dbValue : 0;
+                                sample.rms = rms;
+                            }
+
+                            if (sample.motion && sample.motion.x !== null && sample.motion.y !== null && sample.motion.z !== null) {
+                                sample.motion.magnitude = Math.sqrt(
+                                    sample.motion.x ** 2 + 
+                                    sample.motion.y ** 2 + 
+                                    sample.motion.z ** 2
+                                );
+                            }
+
+                            sampleBuffer.push(sample);
+                            monitoringData.push(sample);
+                            updateTrackingDisplay(sample);
+                            updateMonitoringDisplay();
                         }
-                        
-                        // 計算運動合力
-                        if (sample.motion && sample.motion.x !== null && sample.motion.y !== null && sample.motion.z !== null) {
-                            sample.motion.magnitude = Math.sqrt(
-                                sample.motion.x ** 2 + 
-                                sample.motion.y ** 2 + 
-                                sample.motion.z ** 2
-                            );
-                        }
-                        
-                        sampleBuffer.push(sample);
-                        monitoringData.push(sample);
-                        updateTrackingDisplay(sample);
-                        updateMonitoringDisplay();
+                    });
+
+                    if (started) {
+                        startTimer();
+                    } else {
+                        alert('無法啟動追蹤（可能缺少權限或裝置不支援）');
+                        trackingActive = false;
+                        setTrackingUI(false);
+                        document.getElementById('trackingStatus').textContent = '未啟動';
+                        document.getElementById('trackingStatus').style.color = '#F44336';
                     }
-                });
-                
-                if (started) {
-                    startTimer();
-                } else {
-                    alert('無法啟動追蹤（可能缺少權限或裝置不支援）');
+                } catch (err) {
+                    console.error('啟動追蹤錯誤', err);
+                    alert('啟動追蹤失敗，請檢查裝置權限');
                     trackingActive = false;
-                    document.getElementById('startTrackingBtn').disabled = false;
-                    document.getElementById('stopTrackingBtn').disabled = true;
-                    document.getElementById('trackingStatus').textContent = '未啟動';
+                    setTrackingUI(false);
+                    document.getElementById('trackingStatus').textContent = '錯誤';
                     document.getElementById('trackingStatus').style.color = '#F44336';
                 }
-            } catch (err) {
-                console.error('啟動追蹤錯誤', err);
-                alert('啟動追蹤失敗，請檢查裝置權限');
-                trackingActive = false;
-                document.getElementById('startTrackingBtn').disabled = false;
-                document.getElementById('stopTrackingBtn').disabled = true;
-                document.getElementById('trackingStatus').textContent = '錯誤';
-                document.getElementById('trackingStatus').style.color = '#F44336';
-            }
-        });
+            } else {
+                try {
+                    trackingActive = false;
+                    setTrackingUI(false);
+                    document.getElementById('trackingStatus').textContent = '已停止';
+                    document.getElementById('trackingStatus').style.color = '#FF9800';
 
-        document.getElementById('stopTrackingBtn').addEventListener('click', async () => {
-            try {
-                trackingActive = false;
-                
-                document.getElementById('startTrackingBtn').disabled = false;
-                document.getElementById('stopTrackingBtn').disabled = true;
-                document.getElementById('trackingStatus').textContent = '已停止';
-                document.getElementById('trackingStatus').style.color = '#FF9800';
-                
-                await tracker.stopTracking();
-                stopTimer();
-                
-                // 保存數據到 localStorage
-                if (sampleBuffer.length > 0) {
-                    const existing = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
-                    existing.push(...sampleBuffer);
-                    // 控制陣列長度以免無限制膨脹
-                    if (existing.length > 1000) {
-                        existing.splice(0, existing.length - 1000);
+                    await tracker.stopTracking();
+                    stopTimer();
+
+                    if (sampleBuffer.length > 0) {
+                        const existing = JSON.parse(localStorage.getItem('trackingSamples') || '[]');
+                        existing.push(...sampleBuffer);
+                        if (existing.length > 1000) {
+                            existing.splice(0, existing.length - 1000);
+                        }
+                        localStorage.setItem('trackingSamples', JSON.stringify(existing));
+                        console.log(`已儲存 ${sampleBuffer.length} 筆追蹤數據`);
                     }
-                    localStorage.setItem('trackingSamples', JSON.stringify(existing));
-                    console.log(`已儲存 ${sampleBuffer.length} 筆追蹤數據`);
+                } catch (err) {
+                    console.error('停止追蹤錯誤', err);
+                    alert('停止追蹤時出錯');
                 }
-            } catch (err) {
-                console.error('停止追蹤錯誤', err);
-                alert('停止追蹤時出錯');
             }
         });
 
@@ -761,46 +770,83 @@
             canvas.innerHTML = html;
         }
 
+        // 新版警報：先推入緩衝 pendingAlerts，並以每分鐘批次刷新顯示。
         function addAlert(type, message) {
-            const alert = {
-                type: type,
-                message: message,
-                timestamp: new Date().toLocaleTimeString('zh-TW')
-            };
-            alerts.push(alert);
+            const tsIso = new Date().toISOString();
+            const tsLocal = new Date().toLocaleTimeString('zh-TW');
+            // 保留於歷史 alerts（用於短時間內重複檢查）
+            alerts.push({ type, message, timestamp: tsIso });
+            // 清理超過 60 秒的舊警報，避免長期阻擋新警報
+            const now = Date.now();
+            alerts = alerts.filter(a => now - new Date(a.timestamp) < 60000);
 
-            const alertHtml = `
-                <div class="alert-item ${type}">
-                    <div class="alert-content">
-                        <strong>${type === 'snore' ? '🎺 打鼾檢測' : '🔊 噪音檢測'}</strong>
-                        <div class="alert-time">${alert.timestamp}</div>
-                    </div>
-                    <div class="alert-icon">${type === 'snore' ? '⚠️' : '❗'}</div>
-                </div>
-            `;
+            // 推送到待發送緩衝，等待每分鐘批次發送
+            pendingAlerts.push({ type, message, timestamp: tsLocal });
+        }
+
+        function flushPendingAlerts() {
+            if (!pendingAlerts || pendingAlerts.length === 0) return;
 
             const alertList = document.getElementById('alertList');
-            if (alertList.innerHTML.includes('無警報事件')) {
-                alertList.innerHTML = alertHtml;
-            } else {
-                alertList.insertAdjacentHTML('afterbegin', alertHtml);
-                // 只保留最多 20 條警報
-                if (alertList.children.length > 20) {
+            // 移除空訊息提示（如存在）
+            const emptyNode = alertList.querySelector('.empty-alert');
+            if (emptyNode) emptyNode.remove();
+
+            // 按類型分組顯示（每種類型生成一個可展開項目）
+            const groups = pendingAlerts.reduce((acc, a) => {
+                acc[a.type] = acc[a.type] || [];
+                acc[a.type].push(a);
+                return acc;
+            }, {});
+
+            Object.keys(groups).forEach(type => {
+                const group = groups[type];
+                const count = group.length;
+                const firstTs = group[0].timestamp;
+                let itemsHtml = '';
+                group.forEach(it => {
+                    itemsHtml += `<div style="padding:0.25rem 0; border-bottom: 1px solid #eee;"><div>${it.message}</div><div class="alert-time">${it.timestamp}</div></div>`;
+                });
+
+                const title = type === 'snore' ? '🎺 打鼾檢測' : '🔊 噪音檢測';
+                const summary = `${title} — ${count} 次（${firstTs} 起）`;
+
+                const detailsHtml = `
+                    <details class="alert-item ${type}">
+                        <summary style="cursor: pointer; padding:0.5rem 0;"><strong>${summary}</strong></summary>
+                        <div class="alert-content" style="padding:0.5rem 0;">${itemsHtml}</div>
+                    </details>
+                `;
+
+                alertList.insertAdjacentHTML('afterbegin', detailsHtml);
+                // 保持最多 20 條紀錄
+                while (alertList.children.length > 20) {
                     alertList.removeChild(alertList.lastChild);
                 }
-            }
+            });
+
+            // 清空待發送緩衝
+            pendingAlerts = [];
         }
 
         function clearAlerts() {
             if (confirm('確定要清空所有警報記錄嗎？')) {
                 alerts = [];
-                document.getElementById('alertList').innerHTML = `
+                pendingAlerts = [];
+                const alertList = document.getElementById('alertList');
+                alertList.innerHTML = `
                     <div class="empty-alert">
                         <p>無警報事件記錄</p>
                         <p style="font-size: 0.85rem; margin-top: 0.5rem;">啟動追蹤後會開始檢測</p>
                     </div>
                 `;
             }
+        }
+
+        // 啟動每分鐘刷新（如果尚未啟動）
+        if (!alertFlushInterval) {
+            // 立即在 60 秒後開始第一次 flush
+            alertFlushInterval = setInterval(flushPendingAlerts, 60 * 1000);
         }
 
         // 初始化 - 加載現有數據
