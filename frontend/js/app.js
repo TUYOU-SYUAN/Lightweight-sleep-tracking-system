@@ -13,6 +13,172 @@ class SleepTrackerApp {
     }
 
     /**
+     * 啟動鬧鐘檢查器，每 15 秒檢查一次是否到達設定時間
+     */
+    startAlarmChecker() {
+        // 檢查日期變化以重置 triggeredToday
+        this.alarmCheckerInterval = setInterval(() => {
+            const today = (new Date()).toDateString();
+            if (today !== this.lastCheckedDate) {
+                this.triggeredToday.clear();
+                this.lastCheckedDate = today;
+            }
+            this.checkAlarms();
+        }, 15000);
+    }
+
+    /**
+     * 停止鬧鐘檢查器
+     */
+    stopAlarmChecker() {
+        if (this.alarmCheckerInterval) {
+            clearInterval(this.alarmCheckerInterval);
+            this.alarmCheckerInterval = null;
+        }
+    }
+
+    /**
+     * 檢查所有已啟用的鬧鐘，若時間匹配則觸發
+     */
+    checkAlarms() {
+        const now = new Date();
+        const hhmm = now.toTimeString().slice(0,5); // "HH:MM"
+
+        // 檢查每個鬧鐘
+        this.alarms.forEach(alarm => {
+            if (!alarm || alarm.enabled === false) return;
+
+            // 若已在今天觸發過，跳過
+            if (this.triggeredToday.has(alarm.id)) return;
+
+            // 支援重複日或單次
+            const todayDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][now.getDay()];
+            const runsToday = Array.isArray(alarm.days) && alarm.days.length > 0 ? alarm.days.includes(todayDay) : true;
+            if (!runsToday) return;
+
+            // 比對時間：使用 alarm.wakeupTime（HH:MM）或 smartWakeupTime
+            const targetTimes = [];
+            if (alarm.wakeupTime) targetTimes.push(alarm.wakeupTime);
+            if (alarm.smartWakeupTime) targetTimes.push(alarm.smartWakeupTime);
+
+            if (targetTimes.includes(hhmm)) {
+                this.triggerAlarm(alarm);
+            }
+        });
+    }
+
+    /**
+     * 觸發鬧鐘：播放鈴聲、顯示介面、標記為已觸發
+     */
+    triggerAlarm(alarm) {
+        try {
+            this.activeAlarm = alarm;
+            this.triggeredToday.add(alarm.id);
+
+            // 顯示覆蓋層
+            const ring = document.getElementById('alarmRing');
+            const title = document.getElementById('alarmRingTitle');
+            const msg = document.getElementById('alarmRingMessage');
+            if (ring) ring.setAttribute('aria-hidden','false');
+            if (title) title.textContent = alarm.alarmName || '鬧鐘響起';
+            if (msg) msg.textContent = `時間：${alarm.wakeupTime}（建議 ${alarm.smartWakeupTime || '--:--'}）`;
+
+            // 播放鈴聲
+            this.playRingtone();
+        } catch (e) {
+            console.error('triggerAlarm error', e);
+        }
+    }
+
+    /**
+     * 播放鈴聲（使用 Web Audio API 生成漸進音調）
+     */
+    playRingtone() {
+        try {
+            if (this.ringtoneContext) return; // 已播放中
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            this.ringtoneContext = new AudioCtx();
+            const now = this.ringtoneContext.currentTime;
+            const osc = this.ringtoneContext.createOscillator();
+            const gain = this.ringtoneContext.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.linearRampToValueAtTime(880, now + 2);
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.2, now + 0.1);
+            osc.connect(gain);
+            gain.connect(this.ringtoneContext.destination);
+            osc.start(now);
+            this.ringtoneOsc = osc;
+            this.ringtoneGain = gain;
+
+            // 持續播放直到 stopRingtone 被呼叫；但設一個最大時間保護（5 分鐘）
+            this.ringtoneTimeout = setTimeout(() => {
+                this.stopAlarmSound();
+            }, 5 * 60 * 1000);
+        } catch (e) {
+            console.warn('Audio API failed, fallback to beep via alert', e);
+            // fallback: 持續震動（若支援）
+            if (navigator.vibrate) navigator.vibrate([500,200,500,200,500]);
+        }
+    }
+
+    /**
+     * 停止鈴聲並隱藏覆蓋層
+     */
+    stopAlarmSound() {
+        try {
+            if (this.ringtoneOsc) {
+                try { this.ringtoneOsc.stop(); } catch (e) {}
+                this.ringtoneOsc.disconnect();
+                this.ringtoneOsc = null;
+            }
+            if (this.ringtoneGain) {
+                try { this.ringtoneGain.disconnect(); } catch (e) {}
+                this.ringtoneGain = null;
+            }
+            if (this.ringtoneContext) {
+                try { this.ringtoneContext.close(); } catch (e) {}
+                this.ringtoneContext = null;
+            }
+            if (this.ringtoneTimeout) {
+                clearTimeout(this.ringtoneTimeout);
+                this.ringtoneTimeout = null;
+            }
+
+            const ring = document.getElementById('alarmRing');
+            if (ring) ring.setAttribute('aria-hidden','true');
+            this.activeAlarm = null;
+        } catch (e) {
+            console.error('stopAlarmSound error', e);
+        }
+    }
+
+    /**
+     * 貪睡：將 activeAlarm 的時間加 5 分鐘並解除播放
+     */
+    snoozeActiveAlarm() {
+        if (!this.activeAlarm) return;
+        try {
+            // 計算新時間
+            const base = this.activeAlarm.wakeupTime || this.activeAlarm.smartWakeupTime;
+            if (!base) return this.stopAlarmSound();
+            const [hh, mm] = base.split(':').map(v => Number(v));
+            const d = new Date();
+            d.setHours(hh, mm + 5, 0, 0);
+            const newHH = String(d.getHours()).padStart(2,'0');
+            const newMM = String(d.getMinutes()).padStart(2,'0');
+            this.activeAlarm.wakeupTime = `${newHH}:${newMM}`;
+
+            // 解除當前播放
+            this.stopAlarmSound();
+            this.showNotification('已設定貪睡 5 分鐘');
+        } catch (e) {
+            console.error('snooze error', e);
+        }
+    }
+
+    /**
      * 初始化應用程式
      */
     async init() {
@@ -20,6 +186,11 @@ class SleepTrackerApp {
         this.attachEventListeners();
         await this.loadAlarms();
         this.updateUI();
+
+        // 啟動鬧鐘檢查器
+        this.triggeredToday = new Set();
+        this.lastCheckedDate = (new Date()).toDateString();
+        this.startAlarmChecker();
 
         // 檢查後端 API 連接
         this.apiAvailable = await API.testConnection();
@@ -51,8 +222,6 @@ class SleepTrackerApp {
             avgDbValue: document.getElementById('avgDbValue'),
             snoreAlert: document.getElementById('snoreAlert'),
             noiseAlert: document.getElementById('noiseAlert'),
-            awakenBtn: document.getElementById('awakenBtn'),
-            awakenStatus: document.getElementById('awakenStatus'),
         };
     }
 
@@ -158,31 +327,18 @@ class SleepTrackerApp {
             });
         }
 
-        // 喚醒按鈕
-        if (this.elements.awakenBtn) {
-            this.elements.awakenBtn.addEventListener('click', () => {
-                try {
-                    if (typeof SmartAwake === 'undefined') {
-                        alert('SmartAwake 模組未載入');
-                        return;
-                    }
-                    const success = SmartAwake.awaken();
-                    if (success) {
-                        this.showNotification('⏰ 溫和喚醒已觸發');
-                    } else {
-                        alert('⚠️ 用戶處於深眠狀態，不建議立即喚醒');
-                    }
-                } catch (err) {
-                    console.error('喚醒按鈕錯誤', err);
-                    alert('喚醒操作失敗');
-                }
-            });
-        }
+        // 喚醒按鈕已移除
 
         // 在頁面關閉或離開時嘗試停止追蹤
         window.addEventListener('beforeunload', () => {
             if (this.trackingActive) Tracker.stopTracking();
         });
+
+        // 鬧鐘停止與貪睡按鈕
+        const stopBtn = document.getElementById('stopAlarmBtn');
+        const snoozeBtn = document.getElementById('snoozeAlarmBtn');
+        if (stopBtn) stopBtn.addEventListener('click', () => this.stopAlarmSound());
+        if (snoozeBtn) snoozeBtn.addEventListener('click', () => this.snoozeActiveAlarm());
 
         // 全域與區塊返回按鈕（事件代理）
         document.addEventListener('click', (e) => {
@@ -542,7 +698,7 @@ class SleepTrackerApp {
         if (this.elements.sleepStateInfo) {
             const info = {
                 awake: '用戶已清醒',
-                light: '用戶處於淺眠狀態，適合溫和喚醒',
+                light: '用戶處於淺眠狀態',
                 deep: '用戶處於深眠狀態，避免打擾'
             };
             this.elements.sleepStateInfo.textContent = info[sleepState] || '狀態未知';

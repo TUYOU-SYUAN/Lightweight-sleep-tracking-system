@@ -110,7 +110,7 @@
             <!-- 智能喚醒區域 -->
             <section class="smart-awake-section">
                 <h2>🧠 智能喚醒</h2>
-                <p>系統分析動作與聲音數據，推測睡眠狀態並在淺眠時溫和喚醒。</p>
+                <p>系統分析動作與聲音數據，推測睡眠狀態。</p>
 
                 <!-- 睡眠狀態指示器 -->
                 <div class="sleep-state-display">
@@ -148,15 +148,7 @@
                     </div>
                 </div>
 
-                <!-- 喚醒控制 -->
-                <div class="awaken-controls">
-                    <button class="btn btn-primary" id="awakenBtn" aria-label="溫和喚醒用戶">
-                        🔔 溫和喚醒
-                    </button>
-                    <small id="awakenStatus" style="display: block; margin-top: 0.5rem; color: #999;">
-                        淺眠或清醒時才能喚醒
-                    </small>
-                </div>
+                <!-- 智能喚醒：手動喚醒按鈕已移除 -->
             </section>
         </div>
 
@@ -180,6 +172,18 @@
             </div>
             <button class="btn btn-primary" id="updateAlarmBtn">更新鬧鐘</button>
             <button class="btn btn-secondary" id="deleteAlarmBtn">刪除鬧鐘</button>
+        </div>
+    </div>
+
+    <!-- 鬧鐘響鈴覆蓋層 -->
+    <div id="alarmRing" class="alarm-ring" aria-hidden="true">
+        <div class="alarm-ring-content">
+            <h2 id="alarmRingTitle">鬧鐘響起</h2>
+            <p id="alarmRingMessage">時間到了！請起床或按下停止。</p>
+            <div class="alarm-ring-actions">
+                <button class="btn btn-primary" id="stopAlarmBtn">停止鈴聲</button>
+                <button class="btn btn-secondary" id="snoozeAlarmBtn">稍後 5 分鐘</button>
+            </div>
         </div>
     </div>
 

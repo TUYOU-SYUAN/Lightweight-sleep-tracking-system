@@ -135,37 +135,10 @@ const SmartAwake = (function () {
      * 溫和喚醒用戶
      * 在淺眠時觸發振動/聲音提示
      */
+    // 溫和喚醒功能已移除：保留函式定義但不執行任何動作，避免外部呼叫導致錯誤
     function gentleAwaken() {
-        // 嘗試使用振動 API
-        if ('vibrate' in navigator) {
-            // 柔和振動模式：短暫、漸進
-            navigator.vibrate([200, 100, 200, 100, 300]);
-        }
-
-        // 播放溫和的喚醒提示音（需預先準備音頻檔案）
-        // 可改為使用 Web Audio API 生成柔和音調
-        try {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const now = audioContext.currentTime;
-            const osc = audioContext.createOscillator();
-            const gain = audioContext.createGain();
-
-            osc.connect(gain);
-            gain.connect(audioContext.destination);
-
-            // 生成漸進式柔和音調（400-500 Hz）
-            osc.frequency.setValueAtTime(400, now);
-            osc.frequency.exponentialRampToValueAtTime(500, now + 0.5);
-
-            gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.15, now + 0.1);
-            gain.gain.linearRampToValueAtTime(0, now + 0.5);
-
-            osc.start(now);
-            osc.stop(now + 0.5);
-        } catch (e) {
-            console.warn('無法播放喚醒音，可能是權限或環境問題', e);
-        }
+        console.info('gentleAwaken 已停用');
+        return;
     }
 
     /**
@@ -265,14 +238,11 @@ const SmartAwake = (function () {
         },
 
         /**
-         * 溫和喚醒用戶
+         * 溫和喚醒功能已停用
          */
         awaken() {
-            if (currentSleepState === SLEEP_STATES.LIGHT_SLEEP || currentSleepState === SLEEP_STATES.AWAKE) {
-                gentleAwaken();
-                return true;
-            }
-            return false; // 深眠時不喚醒
+            console.info('SmartAwake.awaken 已停用');
+            return false;
         },
 
         /**

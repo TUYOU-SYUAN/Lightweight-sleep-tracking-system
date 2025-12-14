@@ -571,17 +571,31 @@ input[type="text"]:focus {
 }
 
 /* 喚醒控制 */
-.awaken-controls {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e0e0e0;
-    text-align: center;
-}
+/* awaken controls removed */
 
-#awakenBtn {
-    margin: 0 auto;
-    display: inline-flex;
+/* 鬧鐘響鈴覆蓋層 */
+.alarm-ring {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
 }
+.alarm-ring[aria-hidden="false"] { display: flex; }
+.alarm-ring-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.alarm-ring-actions { display:flex; gap:1rem; justify-content:center; margin-top:1rem; }
+.alarm-ring h2 { color: #e53935; margin-bottom:0.5rem; }
+.alarm-ring p { color: #666; }
 
 /* ===================================
    動畫定義
